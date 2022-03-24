@@ -6,9 +6,13 @@ import {
   postHeartBeat,
   putHeartBeat,
 } from "../controllers/heartbeat.js";
+import publicRouter from "./public.js";
+import privateRouter from "./private.js";
 
 const router = Router();
 
+router.use("/public", publicRouter);
+router.use("/private", privateRouter);
 router
   .route("/")
   .get(getHeartBeat)
