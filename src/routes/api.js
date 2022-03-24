@@ -1,24 +1,38 @@
 import { Router } from "express";
 import {
-  deleteHeartBeat,
-  getHeartBeat,
-  patchHeartBeat,
-  postHeartBeat,
-  putHeartBeat,
-} from "../controllers/heartbeat.js";
-import publicRouter from "./public.js";
-import privateRouter from "./private.js";
+  addCategory,
+  deleteCategory,
+  getCategories,
+  getCategory,
+} from "../controllers/categories.js";
+import { getHeartBeat } from "../controllers/heartbeat.js";
+import {
+  addProduct,
+  deleteProduct,
+  getProduct,
+  getProducts,
+  updateProduct,
+} from "../controllers/products.js";
 
+//Router init
 const router = Router();
 
-router.use("/public", publicRouter);
-router.use("/private", privateRouter);
+//Route for API testing
+router.route("/").get(getHeartBeat);
+
+//TODO: add role to user
+//TODO: isAdmin middleware for private routes
+
+//Routes for categories
+router.route("/categories").get(getCategories).post(addCategory);
+router.route("/categories/:id").get(getCategory).delete(deleteCategory);
+
+//Routes for products
+router.route("/products").get(getProducts).post(addProduct);
 router
-  .route("/")
-  .get(getHeartBeat)
-  .post(postHeartBeat)
-  .put(putHeartBeat)
-  .delete(deleteHeartBeat)
-  .patch(patchHeartBeat);
+  .route("/products/:id")
+  .get(getProduct)
+  .put(updateProduct)
+  .delete(deleteProduct);
 
 export default router;
