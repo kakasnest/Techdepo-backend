@@ -6,9 +6,10 @@ const productSchema = new Schema(
     name: {
       type: String,
       trim: true,
+      required: true,
     },
     description: {
-      manufacturer: {
+      brand: {
         type: String,
         trim: true,
       },
@@ -17,6 +18,7 @@ const productSchema = new Schema(
     currency: {
       type: String,
       enum: ["HUF", "EUR", "US"],
+      uppercase: true,
     },
     stock: Number,
     price: Number,

@@ -7,10 +7,12 @@ const userSchema = new Schema(
       firstName: {
         type: String,
         trim: true,
+        required: true,
       },
       lastName: {
         type: String,
         trim: true,
+        required: true,
       },
     },
     email: {
@@ -29,31 +31,26 @@ const userSchema = new Schema(
     },
     role: {
       type: String,
-      enum: ["Admin", "Moderator", "User"],
+      enum: ["ADMIN", "MODERATOR", "USER"],
+      default: "USER",
+      uppercase: true,
     },
     picture: {
       type: String,
       trim: true,
+      default: "",
     },
     registeredAt: {
-      type: Date,
-      default: Date.now,
+      type: String,
+      default: new Date().toISOString().split("T")[0],
       select: false,
     },
-    phone: {
-      type: String,
-      trim: true,
-    },
-    addresses: {
-      type: [{ type: Schema.Types.ObjectId, ref: "Address" }],
-    },
-    orders: {
-      type: [{ type: Schema.Types.ObjectId, ref: "Order" }],
-    },
+    addresses: [{ type: Schema.Types.ObjectId, ref: "Address" }],
+    orders: [{ type: Schema.Types.ObjectId, ref: "Order" }],
     debitCards: [{ type: Schema.Types.ObjectId, ref: "DebitCard" }],
   },
   {
-    collection: "user",
+    collection: "users",
   }
 );
 
