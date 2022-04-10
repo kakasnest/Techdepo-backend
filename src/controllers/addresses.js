@@ -26,7 +26,7 @@ export const getAddress = async (req, res) => {
   }
 };
 
-export const getAddresss = async (req, res) => {
+export const getAddresses = async (req, res) => {
   try {
     const addresss = await Address.find();
     res.status(200).json(addresss);

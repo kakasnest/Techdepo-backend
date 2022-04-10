@@ -18,8 +18,8 @@ const reviewSchema = new Schema(
       required: true,
     },
     date: {
-      type: String,
-      default: new Date().toISOString().split("T")[0],
+      type: Date,
+      default: new Date(),
     },
   },
   {

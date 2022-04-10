@@ -4,8 +4,8 @@ const { Schema } = mongoose;
 const orderSchema = new Schema(
   {
     date: {
-      type: String,
-      default: new Date().toISOString().split("T")[0],
+      type: Date,
+      default: new Date(),
     },
     state: {
       type: String,

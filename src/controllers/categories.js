@@ -1,4 +1,5 @@
 import Category from "../models/category.js";
+import Product from "../models/product.js";
 
 export const getCategories = async (req, res) => {
   try {
@@ -9,14 +10,17 @@ export const getCategories = async (req, res) => {
   }
 };
 
-export const getCategory = async (req, res) => {
+export const getProductsByCategoryId = async (req, res) => {
   const {
     params: { id },
   } = req;
 
   try {
-    const categoryToGet = await Category.findById(id);
-    res.status(200).json(categoryToGet);
+    const productToGet = await Product.where("categories")
+      .equals(id)
+      .populate(["categories"]);
+
+    res.status(200).json(productToGet);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

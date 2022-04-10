@@ -41,8 +41,8 @@ const userSchema = new Schema(
       default: "",
     },
     registeredAt: {
-      type: String,
-      default: new Date().toISOString().split("T")[0],
+      type: Date,
+      default: new Date(),
       select: false,
     },
     addresses: [{ type: Schema.Types.ObjectId, ref: "Address" }],

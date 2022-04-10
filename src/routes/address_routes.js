@@ -3,13 +3,13 @@ import {
   addAddress,
   deleteAddress,
   getAddress,
-  getAddresss,
+  getAddresses,
   updateAddress,
 } from "../controllers/addresses.js";
 
 const router = Router();
 
-router.route("/").post(addAddress).get(getAddresss);
+router.route("/").post(addAddress).get(getAddresses);
 router.route("/:id").get(getAddress).put(updateAddress).delete(deleteAddress);
 
 export default router;
