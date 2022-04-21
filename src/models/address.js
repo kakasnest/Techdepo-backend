@@ -41,6 +41,7 @@ const addressSchema = new Schema(
   },
   {
     collection: "addresses",
+    timestamps: true,
   }
 );
 

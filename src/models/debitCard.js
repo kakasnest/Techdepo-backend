@@ -26,6 +26,7 @@ const debitCardSchema = new Schema(
   },
   {
     collection: "debitCards",
+    timestamps: true,
   }
 );
 

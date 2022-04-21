@@ -40,17 +40,13 @@ const userSchema = new Schema(
       trim: true,
       default: "",
     },
-    registeredAt: {
-      type: Date,
-      default: new Date(),
-      select: false,
-    },
     addresses: [{ type: Schema.Types.ObjectId, ref: "Address" }],
     orders: [{ type: Schema.Types.ObjectId, ref: "Order" }],
     debitCards: [{ type: Schema.Types.ObjectId, ref: "DebitCard" }],
   },
   {
     collection: "users",
+    timestamps: true,
   }
 );
 

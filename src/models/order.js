@@ -3,10 +3,6 @@ import mongoose from "mongoose";
 const { Schema } = mongoose;
 const orderSchema = new Schema(
   {
-    date: {
-      type: Date,
-      default: new Date(),
-    },
     state: {
       type: String,
       enum: ["CREATED", "APPROVED", "SENT", "COMPLETED"],
@@ -17,6 +13,7 @@ const orderSchema = new Schema(
   },
   {
     collection: "orders",
+    timestamps: true,
   }
 );
 

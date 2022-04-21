@@ -17,13 +17,10 @@ const reviewSchema = new Schema(
       ref: "User",
       required: true,
     },
-    date: {
-      type: Date,
-      default: new Date(),
-    },
   },
   {
     collection: "reviews",
+    timestamps: true,
   }
 );
 
