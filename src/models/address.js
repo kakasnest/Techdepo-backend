@@ -7,6 +7,7 @@ const addressSchema = new Schema(
       type: String,
       trim: true,
       required: true,
+      unique: true,
     },
     country: {
       type: String,

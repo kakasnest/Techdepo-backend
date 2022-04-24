@@ -7,6 +7,7 @@ const debitCardSchema = new Schema(
       type: String,
       trim: true,
       required: true,
+      unique: true,
     },
     expDate: {
       type: String,
