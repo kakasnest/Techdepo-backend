@@ -1,4 +1,5 @@
 import User from "../models/user.js";
+import bcrypt from "bcrypt";
 
 export const addUser = async (req, res) => {
   const {
@@ -6,8 +7,15 @@ export const addUser = async (req, res) => {
   } = req;
 
   try {
-    const userToCreate = await User.create(user);
-    res.status(200).json(userToCreate);
+    const result = await User.findOne({ email: user.email });
+
+    if (result) {
+      res.status(500).json({ message: "Email already in use" });
+    } else {
+      const hashed = await bcrypt.hash(user.password, 10);
+      await User.create({ ...user, password: hashed });
+      res.status(201).json({ message: "Registration complete" });
+    }
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

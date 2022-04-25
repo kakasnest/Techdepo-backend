@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 const {
   env: { URI },
 } = process;
+
 const connect = async () => {
   mongoose.connect(URI);
 
