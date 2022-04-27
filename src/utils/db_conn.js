@@ -1,8 +1,6 @@
 import mongoose from "mongoose";
 
-const {
-  env: { URI },
-} = process;
+const URI = process.env.URI;
 
 const connect = async () => {
   mongoose.connect(URI);

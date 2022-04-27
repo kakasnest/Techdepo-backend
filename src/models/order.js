@@ -9,7 +9,16 @@ const orderSchema = new Schema(
       default: "CREATED",
       uppercase: true,
     },
-    products: [{ type: Schema.Types.ObjectId, ref: "Product", required: true }],
+    orderLines: [
+      {
+        product: {
+          type: Schema.Types.ObjectId,
+          ref: "Product",
+          required: true,
+        },
+        quantity: Number,
+      },
+    ],
   },
   {
     collection: "orders",

@@ -10,9 +10,7 @@ export const getProducts = async (req, res) => {
 };
 
 export const getProduct = async (req, res) => {
-  const {
-    params: { id },
-  } = req;
+  const id = req.params.id;
 
   try {
     const productToGet = await Product.findById(id).populate(["categories"]);
@@ -23,9 +21,7 @@ export const getProduct = async (req, res) => {
 };
 
 export const addProduct = async (req, res) => {
-  const {
-    body: { product },
-  } = req;
+  const product = req.body.product;
 
   try {
     const productToCreate = await Product.create(product);
@@ -36,9 +32,7 @@ export const addProduct = async (req, res) => {
 };
 
 export const deleteProduct = async (req, res) => {
-  const {
-    params: { id },
-  } = req;
+  const id = req.params.id;
 
   try {
     const productToDelete = await Product.findByIdAndDelete(id);
@@ -49,10 +43,8 @@ export const deleteProduct = async (req, res) => {
 };
 
 export const updateProduct = async (req, res) => {
-  const {
-    params: { id },
-    body: { product },
-  } = req;
+  const product = req.body.product;
+  const id = req.params.id;
 
   try {
     const productToUpdate = await Product.findByIdAndUpdate(id, product, {

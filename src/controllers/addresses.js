@@ -1,9 +1,7 @@
 import Address from "../models/address.js";
 
 export const addAddress = async (req, res) => {
-  const {
-    body: { address },
-  } = req;
+  const address = req.body.address;
 
   try {
     const addressToCreate = await Address.create(address);
@@ -13,10 +11,17 @@ export const addAddress = async (req, res) => {
   }
 };
 
+export const getAddresses = async (req, res) => {
+  try {
+    const addresses = await Address.find();
+    res.status(200).json(addresses);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 export const getAddress = async (req, res) => {
-  const {
-    params: { id },
-  } = req;
+  const id = req.params.id;
 
   try {
     const addressToGet = await Address.findById(id);
@@ -26,19 +31,8 @@ export const getAddress = async (req, res) => {
   }
 };
 
-export const getAddresses = async (req, res) => {
-  try {
-    const addresss = await Address.find();
-    res.status(200).json(addresss);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
-
 export const deleteAddress = async (req, res) => {
-  const {
-    params: { id },
-  } = req;
+  const id = req.params.id;
 
   try {
     const addressToDelete = await Address.findByIdAndDelete(id);
@@ -49,10 +43,8 @@ export const deleteAddress = async (req, res) => {
 };
 
 export const updateAddress = async (req, res) => {
-  const {
-    params: { id },
-    body: { address },
-  } = req;
+  const id = req.params.id;
+  const address = req.body.address;
 
   try {
     const addressToUpdate = await Address.findByIdAndUpdate(id, address, {

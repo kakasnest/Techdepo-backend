@@ -11,9 +11,7 @@ export const getCategories = async (req, res) => {
 };
 
 export const getProductsByCategoryId = async (req, res) => {
-  const {
-    params: { id },
-  } = req;
+  const id = req.params.id;
 
   try {
     const productToGet = await Product.where("categories")
@@ -27,9 +25,7 @@ export const getProductsByCategoryId = async (req, res) => {
 };
 
 export const addCategory = async (req, res) => {
-  const {
-    body: { category },
-  } = req;
+  const category = req.body.category;
 
   try {
     const categoryToCreate = await Category.create(category);
@@ -40,9 +36,7 @@ export const addCategory = async (req, res) => {
 };
 
 export const deleteCategory = async (req, res) => {
-  const {
-    params: { id },
-  } = req;
+  const id = req.params.id;
 
   try {
     const categoryToDelete = await Category.findByIdAndDelete(id);
@@ -53,10 +47,8 @@ export const deleteCategory = async (req, res) => {
 };
 
 export const updateCategory = async (req, res) => {
-  const {
-    params: { id },
-    body: { category },
-  } = req;
+  const id = req.params.id;
+  const category = req.body.category;
 
   try {
     const categoryToUpdate = await Category.findByIdAndUpdate(id, category, {

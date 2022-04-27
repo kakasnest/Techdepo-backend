@@ -6,14 +6,15 @@ import {
   getProductsByCategoryId,
   updateCategory,
 } from "../controllers/categories.js";
+import authMW from "../middlewares/authMW.js";
 
 const router = Router();
 
-router.route("/").get(getCategories).post(addCategory);
+router.route("/").get(getCategories).post([authMW, addCategory]);
 router
   .route("/:id")
-  .delete(deleteCategory)
+  .delete([authMW, deleteCategory])
   .get(getProductsByCategoryId)
-  .put(updateCategory);
+  .put([authMW, updateCategory]);
 
 export default router;

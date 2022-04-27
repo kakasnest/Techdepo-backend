@@ -6,8 +6,10 @@ import {
   getReviews,
   updateReview,
 } from "../controllers/reviews.js";
+import authMW from "../middlewares/authMW.js";
 
 const router = Router();
+router.use(authMW);
 
 router.route("/").post(addReview).get(getReviews);
 router.route("/:id").get(getReview).put(updateReview).delete(deleteReview);

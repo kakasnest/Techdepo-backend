@@ -1,15 +1,16 @@
 import { Router } from "express";
 import {
-  addUser,
   deleteUser,
   getUser,
   getUsers,
   updateUser,
 } from "../controllers/users.js";
+import authMW from "../middlewares/authMW.js";
 
 const router = Router();
+router.use(authMW);
 
-router.route("/").post(addUser).get(getUsers);
+router.route("/").get(getUsers);
 router.route("/:id").get(getUser).put(updateUser).delete(deleteUser);
 
 export default router;

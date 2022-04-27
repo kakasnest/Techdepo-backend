@@ -6,10 +6,15 @@ import {
   getProducts,
   updateProduct,
 } from "../controllers/products.js";
+import authMW from "../middlewares/authMW.js";
 
 const router = Router();
 
-router.route("/").get(getProducts).post(addProduct);
-router.route("/:id").delete(deleteProduct).get(getProduct).put(updateProduct);
+router.route("/").get(getProducts).post([authMW, addProduct]);
+router
+  .route("/:id")
+  .delete([authMW, deleteProduct])
+  .get(getProduct)
+  .put([authMW, updateProduct]);
 
 export default router;
