@@ -33,6 +33,10 @@ const userSchema = new Schema(
       default: "USER",
       uppercase: true,
     },
+    verified: {
+      type: Boolean,
+      default: false,
+    },
     picture: {
       type: String,
       trim: true,

@@ -1,9 +1,9 @@
 import express from "express";
-import cors from "cors";
 import "dotenv/config";
 import router from "./routes/api.js";
 import Mongo_connect from "./utils/db_conn.js";
 import cookieParser from "cookie-parser";
+import helmet from "helmet";
 
 //Database connection setup
 Mongo_connect();
@@ -13,7 +13,7 @@ const app = express();
 const port = 5000;
 
 //Middlewares
-app.use(cors({ origin: "http://localhost:3000" }));
+app.use(helmet());
 app.use(express.json());
 app.use(cookieParser());
 app.use("/api", router);
