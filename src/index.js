@@ -1,9 +1,10 @@
 import express from "express";
 import "dotenv/config";
-import { api } from "./routes/index.js";
-import MongoConnect from "./utils/DBConnection.js";
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
+
+import api from "./routes/api.js";
+import MongoConnect from "./utils/DBConnection.js";
 
 //Database connection setup
 MongoConnect();

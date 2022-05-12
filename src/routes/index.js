@@ -1,9 +1,0 @@
-export { default as address } from "./address.js";
-export { default as authentication } from "./authentication.js";
-export { default as debitCard } from "./debitCard.js";
-export { default as category } from "./category.js";
-export { default as order } from "./order.js";
-export { default as review } from "./review.js";
-export { default as user } from "./user.js";
-export { default as product } from "./product.js";
-export { default as api } from "./api.js";

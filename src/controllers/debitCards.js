@@ -1,4 +1,4 @@
-import { DebitCard } from "../models/index.js";
+import DebitCard from "../models/debitCard.js";
 
 export const addDebitCard = async (req, res) => {
   const debitCard = req.body.debitCard;

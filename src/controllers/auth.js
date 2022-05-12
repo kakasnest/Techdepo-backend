@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { User } from "../models/index.js";
+
+import User from "../models/user.js";
 
 export const login = async (req, res) => {
   const user = req.body.user;
@@ -21,7 +22,7 @@ export const login = async (req, res) => {
         const token = jwt.sign({ userId: user._id }, secret, {
           expiresIn: "7d",
         });
-        const isSecure = process.env.NODE_ENV === "Production";
+        const isSecure = process.env.NODE_ENV === "PRODUCTION";
         res.cookie("access token", token, { httpOnly: true, secure: isSecure });
         res.status(202).json({ message: "Login successful" });
       }
