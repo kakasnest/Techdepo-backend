@@ -1,12 +1,12 @@
 import express from "express";
 import "dotenv/config";
-import router from "./routes/api.js";
-import Mongo_connect from "./utils/db_conn.js";
+import { api } from "./routes/index.js";
+import MongoConnect from "./utils/DBConnection.js";
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
 
 //Database connection setup
-Mongo_connect();
+MongoConnect();
 
 //App init
 const app = express();
@@ -16,7 +16,7 @@ const port = 5000;
 app.use(helmet());
 app.use(express.json());
 app.use(cookieParser());
-app.use("/api", router);
+app.use("/api", api);
 
 //App listening
 app.listen(port, () => {
