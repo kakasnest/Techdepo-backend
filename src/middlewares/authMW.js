@@ -5,8 +5,9 @@ const authMW = async (req, res, next) => {
   const secret = process.env.TOKEN_SECRET;
 
   try {
-    const { userId } = jwt.verify(token, secret);
+    const { userId, role } = jwt.verify(token, secret);
     req.user = userId;
+    req.role = role;
     next();
   } catch (err) {
     next(err);

@@ -19,11 +19,15 @@ export const login = async (req, res) => {
       if (!match) {
         res.status(500).json({ message: "Wrong password" });
       } else {
-        const token = jwt.sign({ userId: user._id }, secret, {
-          expiresIn: "7d",
-        });
+        const token = jwt.sign(
+          { userId: isValidUser._id, role: isValidUser.role },
+          secret,
+          {
+            expiresIn: "7d",
+          }
+        );
         const isSecure = process.env.NODE_ENV === "PRODUCTION";
-        res.cookie("access token", token, { httpOnly: true, secure: isSecure });
+        res.cookie("access-token", token, { httpOnly: true, secure: isSecure });
         res.status(202).json({ message: "Login successful" });
       }
     }
@@ -45,6 +49,15 @@ export const register = async (req, res) => {
       await User.create({ ...user, password: hashed });
       res.status(201).json({ message: "Registration complete" });
     }
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+export const logout = async (req, res) => {
+  try {
+    res.clearCookie("access-token");
+    res.json({ message: "Auth cookie has been cleared from the browser" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
