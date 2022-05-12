@@ -19,13 +19,9 @@ export const login = async (req, res) => {
       if (!match) {
         res.status(500).json({ message: "Wrong password" });
       } else {
-        const token = jwt.sign(
-          { userId: isValidUser._id, role: isValidUser.role },
-          secret,
-          {
-            expiresIn: "7d",
-          }
-        );
+        const token = jwt.sign({ userId: isValidUser._id }, secret, {
+          expiresIn: "7d",
+        });
         const isSecure = process.env.NODE_ENV === "PRODUCTION";
         res.cookie("access-token", token, { httpOnly: true, secure: isSecure });
         res.status(202).json({ message: "Login successful" });
