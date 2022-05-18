@@ -16,12 +16,6 @@ const productSchema = new Schema(
       },
     },
     images: [{ type: String, trim: true }],
-    currency: {
-      type: String,
-      enum: ["HUF", "EUR", "US"],
-      uppercase: true,
-      default: "EUR",
-    },
     stock: Number,
     price: Number,
     reviews: [{ type: Schema.Types.ObjectId, ref: "Review" }],

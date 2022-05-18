@@ -34,7 +34,7 @@ const userSchema = new Schema(
     picture: {
       type: String,
       trim: true,
-      default: "",
+      default: "/images/default.png",
     },
     addresses: [{ type: Schema.Types.ObjectId, ref: "Address" }],
     orders: [{ type: Schema.Types.ObjectId, ref: "Order" }],

@@ -1,3 +1,3 @@
-export const getHeartBeat = async (req, res) => {
+export const getHeartBeat = (req, res) => {
   res.json({ heartbeat: "The API is rolling!" });
 };

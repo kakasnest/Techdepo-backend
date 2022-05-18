@@ -18,7 +18,7 @@ const adminSchema = new Schema(
     picture: {
       type: String,
       trim: true,
-      default: "",
+      default: "/images/default.png",
     },
   },
   {
