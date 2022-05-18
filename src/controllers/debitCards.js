@@ -5,7 +5,7 @@ export const addDebitCard = (req, res) => {
 
   try {
     DebitCard.create(debitCard);
-    res.status(200).json({ message: "success" });
+    res.status(200).json({ message: "Debit card successfully added" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -36,7 +36,7 @@ export const deleteDebitCard = (req, res) => {
 
   try {
     DebitCard.findByIdAndDelete(id);
-    res.status(200).json({ message: "success" });
+    res.status(200).json({ message: "Debit card successfully removed" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -48,7 +48,7 @@ export const updateDebitCard = (req, res) => {
 
   try {
     DebitCard.findByIdAndUpdate(id, debitCard);
-    res.status(200).json({ message: "success" });
+    res.status(200).json({ message: "Debit card successfully updated" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
