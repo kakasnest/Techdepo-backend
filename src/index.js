@@ -24,3 +24,7 @@ app.use("/api", api);
 app.listen(port, () => {
   console.log(`\nServer listening on http://localhost:${port}`);
 });
+
+//TODO: Routes -> sort
+//TODO: Destructure controllers
+//TODO: Add queryparams to Model.find()

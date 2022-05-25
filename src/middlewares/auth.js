@@ -1,8 +1,12 @@
 import jwt from "jsonwebtoken";
 
 const authMW = async (req, res, next) => {
-  const token = req.cookies.auth;
-  const secret = process.env.TOKEN_SECRET;
+  const {
+    cookies: { auth: token },
+  } = req;
+  const {
+    env: { TOKEN_SECRET: secret },
+  } = process;
 
   try {
     const { userId } = jwt.verify(token, secret);
