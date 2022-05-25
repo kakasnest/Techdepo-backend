@@ -1,20 +1,21 @@
 import { Router } from "express";
 import {
-  addProduct,
+  createProduct,
   deleteProduct,
   getProduct,
   getProducts,
   updateProduct,
-} from "../controllers/products.js";
-import authMW from "../middlewares/authMW.js";
+} from "../controllers/product.js";
+import auth from "../middlewares/auth.js";
+import { upload } from "../middlewares/storage.js";
 
 const router = Router();
+const post = [auth, upload.array("product_images"), createProduct];
 
-router.route("/").get(getProducts).post([authMW, addProduct]);
-router
-  .route("/:id")
-  .delete([authMW, deleteProduct])
-  .get(getProduct)
-  .put([authMW, updateProduct]);
+router.route("/").get(getProducts);
+router.route("/").post(post);
+router.route("/:id").delete([auth, deleteProduct]);
+router.route("/:id").get(getProduct);
+router.route("/:id").put([auth, updateProduct]);
 
 export default router;

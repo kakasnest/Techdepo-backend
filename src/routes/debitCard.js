@@ -1,21 +1,20 @@
 import { Router } from "express";
 import {
-  addDebitCard,
+  createDebitCard,
   deleteDebitCard,
   getDebitCard,
   getDebitCards,
   updateDebitCard,
-} from "../controllers/debitCards.js";
-import authMW from "../middlewares/authMW.js";
+} from "../controllers/debitCard.js";
+import auth from "../middlewares/auth.js";
 
 const router = Router();
-router.use(authMW);
+router.use(auth);
 
-router.route("/").post(addDebitCard).get(getDebitCards);
-router
-  .route("/:id")
-  .get(getDebitCard)
-  .put(updateDebitCard)
-  .delete(deleteDebitCard);
+router.route("/").post(createDebitCard);
+router.route("/").get(getDebitCards);
+router.route("/:id").get(getDebitCard);
+router.route("/:id").put(updateDebitCard);
+router.route("/:id").delete(deleteDebitCard);
 
 export default router;

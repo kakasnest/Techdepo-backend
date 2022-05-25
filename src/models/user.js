@@ -3,17 +3,15 @@ import mongoose from "mongoose";
 const { Schema } = mongoose;
 const userSchema = new Schema(
   {
-    name: {
-      firstName: {
-        type: String,
-        trim: true,
-        required: true,
-      },
-      lastName: {
-        type: String,
-        trim: true,
-        required: true,
-      },
+    firstName: {
+      type: String,
+      trim: true,
+      required: true,
+    },
+    lastName: {
+      type: String,
+      trim: true,
+      required: true,
     },
     email: {
       type: String,
@@ -30,6 +28,7 @@ const userSchema = new Schema(
     verified: {
       type: Boolean,
       default: false,
+      select: false,
     },
     picture: {
       type: String,

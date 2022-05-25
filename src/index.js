@@ -4,10 +4,10 @@ import cookieParser from "cookie-parser";
 import helmet from "helmet";
 
 import api from "./routes/api.js";
-import MongoConnect from "./utils/DBConnection.js";
+import connectToMongo from "./utils/databaseConnection.js";
 
 //Database connection setup
-MongoConnect();
+connectToMongo();
 
 //App init
 const app = express();

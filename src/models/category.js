@@ -9,6 +9,11 @@ const categorySchema = new Schema(
       required: true,
       unique: true,
     },
+    image: {
+      trim: true,
+      type: String,
+      default: "/images/default.png",
+    },
   },
   {
     collection: "categories",

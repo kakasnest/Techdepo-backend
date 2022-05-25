@@ -1,17 +1,20 @@
 import { Router } from "express";
 import {
-  addAddress,
+  createAddress,
   deleteAddress,
   getAddress,
   getAddresses,
   updateAddress,
-} from "../controllers/addresses.js";
-import authMW from "../middlewares/authMW.js";
+} from "../controllers/address.js";
+import auth from "../middlewares/auth.js";
 
 const router = Router();
-router.use(authMW);
+router.use(auth);
 
-router.route("/").post(addAddress).get(getAddresses);
-router.route("/:id").get(getAddress).put(updateAddress).delete(deleteAddress);
+router.route("/").post(createAddress);
+router.route("/").get(getAddresses);
+router.route("/:id").get(getAddress);
+router.route("/:id").delete(deleteAddress);
+router.route("/:id").put(updateAddress);
 
 export default router;

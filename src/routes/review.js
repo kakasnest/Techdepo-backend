@@ -1,17 +1,20 @@
 import { Router } from "express";
 import {
-  addReview,
+  createReview,
   deleteReview,
   getReview,
   getReviews,
   updateReview,
-} from "../controllers/reviews.js";
-import authMW from "../middlewares/authMW.js";
+} from "../controllers/review.js";
+import auth from "../middlewares/auth.js";
 
 const router = Router();
-router.use(authMW);
+router.use(auth);
 
-router.route("/").post(addReview).get(getReviews);
-router.route("/:id").get(getReview).put(updateReview).delete(deleteReview);
+router.route("/").post(createReview);
+router.route("/").get(getReviews);
+router.route("/:id").get(getReview);
+router.route("/:id").put(updateReview);
+router.route("/:id").delete(deleteReview);
 
 export default router;

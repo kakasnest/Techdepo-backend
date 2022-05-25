@@ -4,13 +4,15 @@ import {
   getUser,
   getUsers,
   updateUser,
-} from "../controllers/users.js";
-import authMW from "../middlewares/authMW.js";
+} from "../controllers/user.js";
+import auth from "../middlewares/auth.js";
 
 const router = Router();
-router.use(authMW);
+router.use(auth);
 
 router.route("/").get(getUsers);
-router.route("/:id").get(getUser).put(updateUser).delete(deleteUser);
+router.route("/:id").get(getUser);
+router.route("/:id").put(updateUser);
+router.route("/:id").delete(deleteUser);
 
 export default router;

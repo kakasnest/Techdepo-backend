@@ -1,17 +1,20 @@
 import { Router } from "express";
 import {
-  addOrder,
+  createOrder,
   deleteOrder,
   getOrder,
   getOrders,
   updateOrder,
-} from "../controllers/orders.js";
-import authMW from "../middlewares/authMW.js";
+} from "../controllers/order.js";
+import auth from "../middlewares/auth.js";
 
 const router = Router();
-router.use(authMW);
+router.use(auth);
 
-router.route("/").post(addOrder).get(getOrders);
-router.route("/:id").get(getOrder).put(updateOrder).delete(deleteOrder);
+router.route("/").get(getOrders);
+router.route("/").post(createOrder);
+router.route("/:id").get(getOrder);
+router.route("/:id").put(updateOrder);
+router.route("/:id").delete(deleteOrder);
 
 export default router;

@@ -10,10 +10,8 @@ const productSchema = new Schema(
       unique: true,
     },
     description: {
-      brand: {
-        type: String,
-        trim: true,
-      },
+      type: String,
+      trim: true,
     },
     images: [{ type: String, trim: true }],
     stock: Number,

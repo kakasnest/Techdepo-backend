@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const { Schema } = mongoose;
 const adminSchema = new Schema(
   {
-    email: {
+    username: {
       type: String,
       trim: true,
       unique: true,
@@ -15,7 +15,7 @@ const adminSchema = new Schema(
       trim: true,
       required: true,
     },
-    picture: {
+    image: {
       type: String,
       trim: true,
       default: "/images/default.png",

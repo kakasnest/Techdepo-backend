@@ -23,7 +23,7 @@ export const login = async (req, res) => {
           expiresIn: "7d",
         });
         const isSecure = process.env.NODE_ENV === "PRODUCTION";
-        res.cookie("access-token", token, { httpOnly: true, secure: isSecure });
+        res.cookie("auth", token, { httpOnly: true, secure: isSecure });
         res.status(202).json({ message: "Login successful" });
       }
     }
