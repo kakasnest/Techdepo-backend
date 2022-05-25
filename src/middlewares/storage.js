@@ -20,7 +20,7 @@ const storage = multer.diskStorage({
     const random = Math.round(Math.random() * 1e9);
     const fileExtension =
       file.originalname.split(".")[file.originalname.split(".").length - 1];
-    const uniqueName = `${random}-${Date.now()}.${fileExtension}`;
+    const uniqueName = `${random}${Date.now()}.${fileExtension}`;
     next(null, uniqueName);
   },
 });

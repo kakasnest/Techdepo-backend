@@ -1,7 +1,9 @@
 import Product from "../models/product.js";
 
 export const getProduct = async (req, res) => {
-  const id = req.params.id;
+  const {
+    params: { id },
+  } = req;
 
   try {
     const product = await Product.findById(id);
@@ -12,8 +14,10 @@ export const getProduct = async (req, res) => {
 };
 
 export const getProducts = async (req, res) => {
+  const { query } = req;
+
   try {
-    const products = await Product.find();
+    const products = await Product.find({ ...query });
     res.status(200).json(products);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -21,22 +25,31 @@ export const getProducts = async (req, res) => {
 };
 
 export const createProduct = async (req, res) => {
-  const product = JSON.parse(req.body.product);
+  const {
+    body: { name, description, stock, price, reviews, categories },
+  } = req;
   const images = req.files.map((f) => f.path);
 
   try {
     await Product.create({
-      ...product,
+      name,
+      description,
+      stock,
+      price,
+      reviews,
+      categories,
       images,
     });
-    res.status(200).json({ message: "Product created" });
+    res.status(201).json({ message: "Product created" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
 
 export const deleteProduct = async (req, res) => {
-  const id = req.params.id;
+  const {
+    params: { id },
+  } = req;
 
   try {
     await Product.findByIdAndDelete(id);
@@ -47,11 +60,23 @@ export const deleteProduct = async (req, res) => {
 };
 
 export const updateProduct = async (req, res) => {
-  const product = req.body.product;
-  const id = req.params.id;
+  const {
+    body: { name, description, images, stock, price, reviews, categories },
+  } = req;
+  const {
+    params: { id },
+  } = req;
 
   try {
-    await Product.findByIdAndUpdate(id, product);
+    await Product.findByIdAndUpdate(id, {
+      name,
+      description,
+      images,
+      stock,
+      price,
+      reviews,
+      categories,
+    });
     res.status(200).json({ message: "Product updated" });
   } catch (err) {
     res.status(500).json({ message: err.message });

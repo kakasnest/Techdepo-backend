@@ -1,5 +1,4 @@
 import Category from "../models/category.js";
-import Product from "../models/product.js";
 
 export const getCategories = async (req, res) => {
   try {
@@ -10,26 +9,12 @@ export const getCategories = async (req, res) => {
   }
 };
 
-export const getProductsByCategoryId = async (req, res) => {
-  const id = req.params.id;
-
-  try {
-    const productToGet = await Product.where("categories")
-      .equals(id)
-      .populate(["categories"]);
-
-    res.status(200).json(productToGet);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
-
-export const addCategory = async (req, res) => {
+export const createCategory = async (req, res) => {
   const category = req.body.category;
 
   try {
-    const categoryToCreate = await Category.create(category);
-    res.status(200).json(categoryToCreate);
+    await Category.create(category);
+    res.status(200).json({ message: "Category created" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -39,8 +24,8 @@ export const deleteCategory = async (req, res) => {
   const id = req.params.id;
 
   try {
-    const categoryToDelete = await Category.findByIdAndDelete(id);
-    res.status(200).json(categoryToDelete);
+    await Category.findByIdAndDelete(id);
+    res.status(200).json({ message: "Category deleted" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -51,10 +36,8 @@ export const updateCategory = async (req, res) => {
   const category = req.body.category;
 
   try {
-    const categoryToUpdate = await Category.findByIdAndUpdate(id, category, {
-      new: true,
-    });
-    res.status(200).json(categoryToUpdate);
+    await Category.findByIdAndUpdate(id, category);
+    res.status(200).json({ message: "Category updated" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
