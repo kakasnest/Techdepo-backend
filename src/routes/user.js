@@ -1,4 +1,5 @@
 import { Router } from "express";
+
 import { getUserById, getUsers } from "../controllers/user.js";
 import auth from "../middlewares/auth.js";
 

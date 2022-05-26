@@ -1,4 +1,5 @@
 import { Router } from "express";
+
 import { createCategory, getCategories } from "../controllers/category.js";
 import auth from "../middlewares/auth.js";
 import { upload } from "../middlewares/storage.js";

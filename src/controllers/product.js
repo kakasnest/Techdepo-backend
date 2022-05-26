@@ -1,5 +1,6 @@
-import Product from "../models/product.js";
 import { join, sep } from "path";
+
+import Product from "../models/product.js";
 
 export const getProduct = async (req, res) => {
   const {

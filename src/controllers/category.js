@@ -1,5 +1,6 @@
-import Category from "../models/category.js";
 import { join, sep } from "path";
+
+import Category from "../models/category.js";
 
 export const getCategories = async (req, res) => {
   try {

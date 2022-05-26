@@ -1,6 +1,6 @@
 import { Router, static as serve } from "express";
-import { getHeartBeat } from "../controllers/heartbeat.js";
 
+import { getHeartBeat } from "../controllers/heartbeat.js";
 import category from "./category.js";
 import product from "./product.js";
 import user from "./user.js";
