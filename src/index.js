@@ -24,8 +24,3 @@ app.use("/api", api);
 app.listen(port, () => {
   console.log(`\nServer listening on http://localhost:${port}`);
 });
-
-//TODO: Destructure controllers
-//TODO: Add queryparams to Model.find()
-//TODO: Refactor controller read
-//TODO:MODEL REFACTOR!

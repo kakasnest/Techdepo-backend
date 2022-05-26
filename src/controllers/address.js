@@ -13,7 +13,7 @@ export const getAddress = async (req, res) => {
   }
 };
 
-export const getAddresses = async (req, res) => {
+export const getAddressesByUser = async (req, res) => {
   const { userId } = req;
 
   try {

@@ -1,9 +1,8 @@
 import Category from "../models/category.js";
 
 export const getCategories = async (req, res) => {
-  const { query } = req;
   try {
-    const categories = await Category.find({ ...query });
+    const categories = await Category.find();
     res.status(200).json(categories);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -44,7 +43,7 @@ export const updateCategory = async (req, res) => {
   } = req;
   const {
     body: { name },
-  } = req.body.category;
+  } = req;
 
   try {
     await Category.findByIdAndUpdate(id, { name });

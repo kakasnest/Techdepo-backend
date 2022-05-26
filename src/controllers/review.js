@@ -1,7 +1,9 @@
 import Review from "../models/review.js";
 
 export const getReview = async (req, res) => {
-  const id = req.params.id;
+  const {
+    params: { id },
+  } = req;
 
   try {
     const reviewToGet = await Review.findById(id);
@@ -12,6 +14,7 @@ export const getReview = async (req, res) => {
 };
 
 export const getReviews = async (req, res) => {
+  //TODO: Requires 2 different methods -> 1. user reviews, 2. product reviews
   try {
     const reviews = await Review.find();
     res.status(200).json(reviews);
@@ -21,10 +24,13 @@ export const getReviews = async (req, res) => {
 };
 
 export const createReview = async (req, res) => {
-  const review = req.body.review;
+  const {
+    body: { text, rating, productId },
+    userId,
+  } = req;
 
   try {
-    await Review.create(review);
+    await Review.create({ text, rating, userId, productId });
     res.status(200).json({ message: "Review created" });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -32,7 +38,9 @@ export const createReview = async (req, res) => {
 };
 
 export const deleteReview = async (req, res) => {
-  const id = req.params.id;
+  const {
+    params: { id },
+  } = req;
 
   try {
     await Review.findByIdAndDelete(id);
@@ -43,11 +51,15 @@ export const deleteReview = async (req, res) => {
 };
 
 export const updateReview = async (req, res) => {
-  const id = req.params.id;
-  const review = req.body.review;
+  const {
+    params: { id },
+  } = req;
+  const {
+    body: { text, rating },
+  } = req;
 
   try {
-    await Review.findByIdAndUpdate(id, review);
+    await Review.findByIdAndUpdate(id, { text, rating });
     res.status(200).json({ message: "Review updated" });
   } catch (err) {
     res.status(500).json({ message: err.message });

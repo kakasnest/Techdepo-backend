@@ -13,10 +13,9 @@ const productSchema = new Schema(
       type: String,
       trim: true,
     },
-    images: [{ type: String, trim: true }],
+    images: [String],
     stock: Number,
     price: Number,
-    reviews: [{ type: Schema.Types.ObjectId, ref: "Review" }],
     categories: [{ type: Schema.Types.ObjectId, ref: "Category" }],
   },
   {

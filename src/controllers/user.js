@@ -1,7 +1,9 @@
 import User from "../models/user.js";
 
 export const getUser = async (req, res) => {
-  const id = req.params.id;
+  const {
+    params: { id },
+  } = req;
 
   try {
     const userToGet = await User.findById(id);
@@ -21,7 +23,9 @@ export const getUsers = async (req, res) => {
 };
 
 export const deleteUser = async (req, res) => {
-  const id = req.params.id;
+  const {
+    params: { id },
+  } = req;
 
   try {
     await User.findByIdAndDelete(id);
@@ -32,11 +36,23 @@ export const deleteUser = async (req, res) => {
 };
 
 export const updateUser = async (req, res) => {
-  const id = req.params.id;
-  const user = req.body.user;
+  const {
+    params: { id },
+  } = req;
+  const {
+    body: { firstName, lastName, email, password, verified, image },
+  } = req;
+  //TODO: controller for each update possibility?
 
   try {
-    await User.findByIdAndUpdate(id, user);
+    await User.findByIdAndUpdate(id, {
+      firstName,
+      lastName,
+      email,
+      password,
+      verified,
+      image,
+    });
     res.status(200).json({ message: "User updated" });
   } catch (err) {
     res.status(500).json({ message: err.message });

@@ -1,7 +1,9 @@
 import DebitCard from "../models/debitCard.js";
 
 export const getDebitCard = async (req, res) => {
-  const id = req.params.id;
+  const {
+    params: { id },
+  } = req;
 
   try {
     const debitCard = await DebitCard.findById(id);
@@ -12,8 +14,10 @@ export const getDebitCard = async (req, res) => {
 };
 
 export const getDebitCards = async (req, res) => {
+  const { userId } = req;
+
   try {
-    const debitCards = await DebitCard.find();
+    const debitCards = await DebitCard.find({ userId });
     res.status(200).json(debitCards);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -21,10 +25,13 @@ export const getDebitCards = async (req, res) => {
 };
 
 export const createDebitCard = async (req, res) => {
-  const debitCard = req.body.debitCard;
+  const {
+    body: { name, expDate, cardNumber, cvv },
+    userId,
+  } = req;
 
   try {
-    await DebitCard.create(debitCard);
+    await DebitCard.create({ name, expDate, cardNumber, cvv, userId });
     res.status(200).json({ message: "Debit card created" });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -32,7 +39,9 @@ export const createDebitCard = async (req, res) => {
 };
 
 export const deleteDebitCard = async (req, res) => {
-  const id = req.params.id;
+  const {
+    params: { id },
+  } = req;
 
   try {
     await DebitCard.findByIdAndDelete(id);
@@ -43,11 +52,15 @@ export const deleteDebitCard = async (req, res) => {
 };
 
 export const updateDebitCard = async (req, res) => {
-  const id = req.params.id;
-  const debitCard = req.body.debitCard;
+  const {
+    params: { id },
+  } = req;
+  const {
+    body: { name, expDate, cardNumber, cvv },
+  } = req;
 
   try {
-    await DebitCard.findByIdAndUpdate(id, debitCard);
+    await DebitCard.findByIdAndUpdate(id, { name, expDate, cardNumber, cvv });
     res.status(200).json({ message: "Debit card updated" });
   } catch (err) {
     res.status(500).json({ message: err.message });

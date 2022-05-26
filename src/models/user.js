@@ -30,11 +30,7 @@ const userSchema = new Schema(
       default: false,
       select: false,
     },
-    image: {
-      type: String,
-      trim: true,
-      default: "/images/default.png",
-    },
+    image: String,
   },
   {
     collection: "users",

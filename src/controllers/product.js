@@ -14,10 +14,8 @@ export const getProduct = async (req, res) => {
 };
 
 export const getProducts = async (req, res) => {
-  const { query } = req;
-
   try {
-    const products = await Product.find({ ...query });
+    const products = await Product.find();
     res.status(200).json(products);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -26,7 +24,7 @@ export const getProducts = async (req, res) => {
 
 export const createProduct = async (req, res) => {
   const {
-    body: { name, description, stock, price, reviews, categories },
+    body: { name, description, stock, price, categories },
   } = req;
   const images = req.files.map((f) => f.path);
 
@@ -36,7 +34,6 @@ export const createProduct = async (req, res) => {
       description,
       stock,
       price,
-      reviews,
       categories,
       images,
     });
@@ -61,7 +58,7 @@ export const deleteProduct = async (req, res) => {
 
 export const updateProduct = async (req, res) => {
   const {
-    body: { name, description, images, stock, price, reviews, categories },
+    body: { name, description, images, stock, price, categories },
   } = req;
   const {
     params: { id },
@@ -74,7 +71,6 @@ export const updateProduct = async (req, res) => {
       images,
       stock,
       price,
-      reviews,
       categories,
     });
     res.status(200).json({ message: "Product updated" });
