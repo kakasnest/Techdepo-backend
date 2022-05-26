@@ -30,14 +30,11 @@ const userSchema = new Schema(
       default: false,
       select: false,
     },
-    picture: {
+    image: {
       type: String,
       trim: true,
       default: "/images/default.png",
     },
-    addresses: [{ type: Schema.Types.ObjectId, ref: "Address" }],
-    orders: [{ type: Schema.Types.ObjectId, ref: "Order" }],
-    debitCards: [{ type: Schema.Types.ObjectId, ref: "DebitCard" }],
   },
   {
     collection: "users",

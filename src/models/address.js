@@ -3,11 +3,15 @@ import mongoose from "mongoose";
 const { Schema } = mongoose;
 const addressSchema = new Schema(
   {
+    userId: {
+      type: Schema.Types.ObjectId,
+      required: true,
+      ref: "User",
+    },
     name: {
       type: String,
       trim: true,
       required: true,
-      unique: true,
     },
     country: {
       type: String,

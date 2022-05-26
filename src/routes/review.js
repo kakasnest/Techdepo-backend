@@ -11,10 +11,10 @@ import auth from "../middlewares/auth.js";
 const router = Router();
 router.use(auth);
 
-router.route("/").post(createReview);
-router.route("/").get(getReviews);
 router.route("/:id").get(getReview);
-router.route("/:id").put(updateReview);
+router.route("/").get(getReviews);
+router.route("/").post(createReview);
 router.route("/:id").delete(deleteReview);
+router.route("/:id").put(updateReview);
 
 export default router;

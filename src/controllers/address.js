@@ -1,7 +1,9 @@
 import Address from "../models/address.js";
 
 export const getAddress = async (req, res) => {
-  const id = req.params.id;
+  const {
+    params: { id },
+  } = req;
 
   try {
     const address = await Address.findById(id);
@@ -12,8 +14,10 @@ export const getAddress = async (req, res) => {
 };
 
 export const getAddresses = async (req, res) => {
+  const { userId } = req;
+
   try {
-    const addresses = await Address.find();
+    const addresses = await Address.find({ userId });
     res.status(200).json(addresses);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -21,10 +25,22 @@ export const getAddresses = async (req, res) => {
 };
 
 export const createAddress = async (req, res) => {
-  const address = req.body.address;
+  const {
+    body: { name, country, city, street, postcode, houseNumber, phone },
+    userId,
+  } = req;
 
   try {
-    await Address.create(address);
+    await Address.create({
+      name,
+      country,
+      city,
+      street,
+      postcode,
+      houseNumber,
+      phone,
+      userId,
+    });
     res.status(200).json({ message: "Address created" });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -32,7 +48,9 @@ export const createAddress = async (req, res) => {
 };
 
 export const deleteAddress = async (req, res) => {
-  const id = req.params.id;
+  const {
+    params: { id },
+  } = req;
 
   try {
     await Address.findByIdAndDelete(id);
@@ -43,11 +61,23 @@ export const deleteAddress = async (req, res) => {
 };
 
 export const updateAddress = async (req, res) => {
-  const id = req.params.id;
-  const address = req.body.address;
+  const {
+    params: { id },
+  } = req;
+  const {
+    body: { name, country, city, street, houseNumber, postcode, phone },
+  } = req;
 
   try {
-    await Address.findByIdAndUpdate(id, address);
+    await Address.findByIdAndUpdate(id, {
+      name,
+      country,
+      city,
+      street,
+      houseNumber,
+      postcode,
+      phone,
+    });
     res.status(200).json({ message: "Address updated" });
   } catch (err) {
     res.status(500).json({ message: err.message });
