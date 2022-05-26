@@ -24,6 +24,8 @@ const productSchema = new Schema(
   }
 );
 
+productSchema.set("toJSON", { virtuals: true });
+
 const Product = mongoose.model("Product", productSchema);
 
 export default Product;

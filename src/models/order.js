@@ -31,6 +31,8 @@ const orderSchema = new Schema(
   }
 );
 
+orderSchema.set("toJSON", { virtuals: true });
+
 const Order = mongoose.model("Order", orderSchema);
 
 export default Order;

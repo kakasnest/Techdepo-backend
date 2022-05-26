@@ -37,7 +37,9 @@ const userSchema = new Schema(
 );
 
 userSchema.virtual("fullName").get(function () {
-  return this.firstName + " " + this.lastName;
+  if (this.firstName && this.lastName)
+    return this.firstName + " " + this.lastName;
+  return "";
 });
 userSchema.set("toJSON", { virtuals: true });
 

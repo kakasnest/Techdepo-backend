@@ -1,4 +1,5 @@
 import Product from "../models/product.js";
+import { join, sep } from "path";
 
 export const getProduct = async (req, res) => {
   const {
@@ -25,8 +26,9 @@ export const getProducts = async (req, res) => {
 export const createProduct = async (req, res) => {
   const {
     body: { name, description, stock, price, categories },
+    files,
   } = req;
-  const images = req.files.map((f) => f.path);
+  const images = files.map((f) => join(sep, "api", f.path));
 
   try {
     await Product.create({

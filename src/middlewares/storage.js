@@ -1,14 +1,14 @@
 import multer from "multer";
-import path from "path";
-import fs from "fs";
+import { dirname, join } from "path";
+import { access, mkdir } from "fs";
 
 const storage = multer.diskStorage({
   destination: (req, file, next) => {
-    const filePath = path.join(path.dirname("."), "images", file.fieldname);
+    const filePath = join(dirname("."), "images", file.fieldname);
 
-    fs.access(filePath, (error) => {
+    access(filePath, (error) => {
       if (error) {
-        fs.mkdir(filePath, (error) => {
+        mkdir(filePath, () => {
           next(null, filePath);
         });
       } else {

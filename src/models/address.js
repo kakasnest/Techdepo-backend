@@ -50,6 +50,8 @@ const addressSchema = new Schema(
   }
 );
 
+addressSchema.set("toJSON", { virtuals: true });
+
 const Address = mongoose.model("Address", addressSchema);
 
 export default Address;

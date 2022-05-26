@@ -23,6 +23,8 @@ const adminSchema = new Schema(
   }
 );
 
+adminSchema.set("toJSON", { virtuals: true });
+
 const Admin = mongoose.model("Admin", adminSchema);
 
 export default Admin;

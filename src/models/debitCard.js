@@ -36,6 +36,8 @@ const debitCardSchema = new Schema(
   }
 );
 
+debitCardSchema.set("toJSON", { virtuals: true });
+
 const DebitCard = mongoose.model("DebitCard", debitCardSchema);
 
 export default DebitCard;

@@ -1,5 +1,5 @@
 import Category from "../models/category.js";
-import path from "path";
+import { join, sep } from "path";
 
 export const getCategories = async (req, res) => {
   try {
@@ -13,8 +13,9 @@ export const getCategories = async (req, res) => {
 export const createCategory = async (req, res) => {
   const {
     body: { name },
+    file: { path },
   } = req;
-  const image = path.join(path.sep, "api", req.file.path);
+  const image = join(sep, "api", path);
 
   try {
     await Category.create({ name, image });

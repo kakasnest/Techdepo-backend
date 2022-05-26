@@ -30,6 +30,8 @@ const reviewSchema = new Schema(
   }
 );
 
+reviewSchema.set("toJSON", { virtuals: true });
+
 const Review = mongoose.model("Review", reviewSchema);
 
 export default Review;
