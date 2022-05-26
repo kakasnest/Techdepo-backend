@@ -4,25 +4,27 @@ import jwt from "jsonwebtoken";
 import User from "../models/user.js";
 
 export const login = async (req, res) => {
-  const user = req.body.user;
-  const secret = process.env.TOKEN_SECRET;
+  const {
+    body: { email, password },
+  } = req;
+  const {
+    env: { TOKEN_SECRET: secret, NODE_ENV: env },
+  } = process;
 
   try {
-    const isValidUser = await User.findOne({ email: user.email }).select(
-      "+password"
-    );
+    const user = await User.findOne({ email: email }).select("+password");
 
-    if (!isValidUser) {
+    if (!user) {
       res.status(500).json({ message: "There isn't a user with such a email" });
     } else {
-      const match = await bcrypt.compare(user.password, isValidUser.password);
+      const match = await bcrypt.compare(password, user.password);
       if (!match) {
         res.status(500).json({ message: "Wrong password" });
       } else {
-        const token = jwt.sign({ userId: isValidUser._id }, secret, {
+        const token = jwt.sign({ userId: user._id }, secret, {
           expiresIn: "7d",
         });
-        const isSecure = process.env.NODE_ENV === "PRODUCTION";
+        const isSecure = env === "PRODUCTION";
         res.cookie("auth", token, { httpOnly: true, secure: isSecure });
         res.status(202).json({ message: "Login successful" });
       }
@@ -33,16 +35,18 @@ export const login = async (req, res) => {
 };
 
 export const register = async (req, res) => {
-  const user = req.body.user;
+  const {
+    body: { email, password },
+  } = req;
 
   try {
-    const result = await User.findOne({ email: user.email });
+    const user = await User.findOne({ email: email });
 
-    if (result) {
+    if (user) {
       res.status(500).json({ message: "Email already in use" });
     } else {
-      const hashed = await bcrypt.hash(user.password, 10);
-      await User.create({ ...user, password: hashed });
+      const hashed = await bcrypt.hash(password, 10);
+      await User.create({ email, password: hashed });
       res.status(201).json({ message: "Registration complete" });
     }
   } catch (err) {
@@ -52,7 +56,7 @@ export const register = async (req, res) => {
 
 export const logout = async (req, res) => {
   try {
-    res.clearCookie("access-token");
+    res.clearCookie("auth");
     res.json({ message: "Auth cookie has been cleared from the browser" });
   } catch (err) {
     res.status(500).json({ message: err.message });

@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 
-const authMW = async (req, res, next) => {
+const auth = async (req, res, next) => {
   const {
     cookies: { auth: token },
   } = req;
@@ -17,4 +17,4 @@ const authMW = async (req, res, next) => {
   }
 };
 
-export default authMW;
+export default auth;

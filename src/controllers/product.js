@@ -43,38 +43,38 @@ export const createProduct = async (req, res) => {
   }
 };
 
-export const deleteProduct = async (req, res) => {
-  const {
-    params: { id },
-  } = req;
+// export const deleteProduct = async (req, res) => {
+//   const {
+//     params: { id },
+//   } = req;
 
-  try {
-    await Product.findByIdAndDelete(id);
-    res.status(200).json({ message: "Product deleted" });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
+//   try {
+//     await Product.findByIdAndDelete(id);
+//     res.status(200).json({ message: "Product deleted" });
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// };
 
-export const updateProduct = async (req, res) => {
-  const {
-    body: { name, description, images, stock, price, categories },
-  } = req;
-  const {
-    params: { id },
-  } = req;
+// export const updateProduct = async (req, res) => {
+//   const {
+//     body: { name, description, images, stock, price, categories },
+//   } = req;
+//   const {
+//     params: { id },
+//   } = req;
 
-  try {
-    await Product.findByIdAndUpdate(id, {
-      name,
-      description,
-      images,
-      stock,
-      price,
-      categories,
-    });
-    res.status(200).json({ message: "Product updated" });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
+//   try {
+//     await Product.findByIdAndUpdate(id, {
+//       name,
+//       description,
+//       images,
+//       stock,
+//       price,
+//       categories,
+//     });
+//     res.status(200).json({ message: "Product updated" });
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// };

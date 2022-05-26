@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, static as serve } from "express";
 import { getHeartBeat } from "../controllers/heartbeat.js";
 
 import category from "./category.js";
@@ -11,6 +11,7 @@ import order from "./order.js";
 import auth from "./userAuth.js";
 
 const router = Router();
+router.use("/images", serve("images"));
 
 router.use("/categories", category);
 router.use("/products", product);

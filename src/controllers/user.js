@@ -1,12 +1,13 @@
 import User from "../models/user.js";
 
-export const getUser = async (req, res) => {
+export const getUserById = async (req, res) => {
   const {
     params: { id },
   } = req;
 
   try {
     const userToGet = await User.findById(id);
+    console.log(userToGet.fullName);
     res.status(200).json(userToGet);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -22,39 +23,39 @@ export const getUsers = async (req, res) => {
   }
 };
 
-export const deleteUser = async (req, res) => {
-  const {
-    params: { id },
-  } = req;
+// export const deleteUser = async (req, res) => {
+//   const {
+//     params: { id },
+//   } = req;
 
-  try {
-    await User.findByIdAndDelete(id);
-    res.status(200).json({ message: "User deleted" });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
+//   try {
+//     await User.findByIdAndDelete(id);
+//     res.status(200).json({ message: "User deleted" });
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// };
 
-export const updateUser = async (req, res) => {
-  const {
-    params: { id },
-  } = req;
-  const {
-    body: { firstName, lastName, email, password, verified, image },
-  } = req;
-  //TODO: controller for each update possibility?
+// export const updateUser = async (req, res) => {
+//   const {
+//     params: { id },
+//   } = req;
+//   const {
+//     body: { firstName, lastName, email, password, verified, image },
+//   } = req;
+//   //TODO: controller for each update possibility?
 
-  try {
-    await User.findByIdAndUpdate(id, {
-      firstName,
-      lastName,
-      email,
-      password,
-      verified,
-      image,
-    });
-    res.status(200).json({ message: "User updated" });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
+//   try {
+//     await User.findByIdAndUpdate(id, {
+//       firstName,
+//       lastName,
+//       email,
+//       password,
+//       verified,
+//       image,
+//     });
+//     res.status(200).json({ message: "User updated" });
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// };

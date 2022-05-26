@@ -1,20 +1,16 @@
 import { Router } from "express";
 import {
   createAddress,
-  deleteAddress,
-  getAddress,
-  getAddressesByUser,
-  updateAddress,
+  getAddressById,
+  getAddressesByUserId,
 } from "../controllers/address.js";
 import auth from "../middlewares/auth.js";
 
 const router = Router();
 router.use(auth);
 
-router.route("/:id").get(getAddress);
-router.route("/").get(getAddressesByUser);
+router.route("/:id").get(getAddressById);
+router.route("/").get(getAddressesByUserId);
 router.route("/").post(createAddress);
-router.route("/:id").delete(deleteAddress);
-router.route("/:id").put(updateAddress);
 
 export default router;

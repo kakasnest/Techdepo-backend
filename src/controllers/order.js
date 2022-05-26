@@ -38,29 +38,29 @@ export const createOrder = async (req, res) => {
   }
 };
 
-export const deleteOrder = async (req, res) => {
-  const {
-    params: { id },
-  } = req;
+// export const deleteOrder = async (req, res) => {
+//   const {
+//     params: { id },
+//   } = req;
 
-  try {
-    await Order.findByIdAndDelete(id);
-    res.status(200).json({ message: "Order deleted" });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
+//   try {
+//     await Order.findByIdAndDelete(id);
+//     res.status(200).json({ message: "Order deleted" });
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// };
 
-export const updateOrder = async (req, res) => {
-  const {
-    params: { id },
-  } = req;
-  const { body: orderLines, state } = req;
+// export const updateOrder = async (req, res) => {
+//   const {
+//     params: { id },
+//   } = req;
+//   const { body: orderLines, state } = req;
 
-  try {
-    await Order.findByIdAndUpdate(id, { orderLines, state });
-    res.status(200).json({ message: "Order updated" });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
+//   try {
+//     await Order.findByIdAndUpdate(id, { orderLines, state });
+//     res.status(200).json({ message: "Order updated" });
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// };
