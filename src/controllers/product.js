@@ -2,7 +2,7 @@ import { join, sep } from "path";
 
 import Product from "../models/product.js";
 
-export const getProduct = async (req, res) => {
+export const getProductById = async (req, res) => {
   const {
     params: { id },
   } = req;

@@ -1,6 +1,6 @@
 import DebitCard from "../models/debitCard.js";
 
-export const getDebitCard = async (req, res) => {
+export const getDebitCardById = async (req, res) => {
   const {
     params: { id },
   } = req;
@@ -13,7 +13,7 @@ export const getDebitCard = async (req, res) => {
   }
 };
 
-export const getDebitCards = async (req, res) => {
+export const getDebitCardsByUserId = async (req, res) => {
   const { userId } = req;
 
   try {

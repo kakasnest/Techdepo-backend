@@ -1,6 +1,6 @@
 import Review from "../models/review.js";
 
-export const getReview = async (req, res) => {
+export const getReviewById = async (req, res) => {
   const {
     params: { id },
   } = req;
@@ -13,10 +13,11 @@ export const getReview = async (req, res) => {
   }
 };
 
-export const getReviews = async (req, res) => {
+export const getReviewsByUserId = async (req, res) => {
+  const { userId } = req;
   //TODO: Requires 2 different methods -> 1. user reviews, 2. product reviews
   try {
-    const reviews = await Review.find();
+    const reviews = await Review.find({ userId });
     res.status(200).json(reviews);
   } catch (err) {
     res.status(500).json({ message: err.message });
