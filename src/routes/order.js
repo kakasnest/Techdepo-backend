@@ -11,7 +11,7 @@ const router = Router();
 router.use(auth);
 
 router.route("/:id").get(getOrderById);
-router.route("/").get(getOrdersByUserId);
+router.route("/by_user").get(getOrdersByUserId);
 router.route("/").post(createOrder);
 
 export default router;

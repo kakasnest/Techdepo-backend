@@ -8,7 +8,7 @@ import review from "./review.js";
 import debitCard from "./debitCard.js";
 import address from "./address.js";
 import order from "./order.js";
-import auth from "./userAuth.js";
+import entry from "./entry.js";
 
 const router = Router();
 router.use("/images", serve("images"));
@@ -20,7 +20,7 @@ router.use("/reviews", review);
 router.use("/debitcards", debitCard);
 router.use("/addresses", address);
 router.use("/orders", order);
-router.use("/auth", auth);
+router.use("/auth", entry);
 
 router.route("/").get(getHeartBeat);
 

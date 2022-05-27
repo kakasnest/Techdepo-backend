@@ -11,7 +11,7 @@ const router = Router();
 router.use(auth);
 
 router.route("/:id").get(getAddressById);
-router.route("/").get(getAddressesByUserId);
+router.route("/by_user").get(getAddressesByUserId);
 router.route("/").post(createAddress);
 
 export default router;

@@ -15,9 +15,22 @@ export const getReviewById = async (req, res) => {
 
 export const getReviewsByUserId = async (req, res) => {
   const { userId } = req;
-  //TODO: Requires 2 different methods -> 1. user reviews, 2. product reviews
+
   try {
     const reviews = await Review.find({ userId });
+    res.status(200).json(reviews);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+export const getReviewsByProductId = async (req, res) => {
+  const {
+    body: { productId },
+  } = req;
+
+  try {
+    const reviews = await Review.find({ productId });
     res.status(200).json(reviews);
   } catch (err) {
     res.status(500).json({ message: err.message });
