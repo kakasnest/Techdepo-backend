@@ -28,7 +28,10 @@ const userSchema = new Schema(
       default: false,
       select: false,
     },
-    image: String,
+    image: {
+      type: String,
+      default: "/api/images/default/default/profile.png",
+    },
   },
   {
     collection: "users",
