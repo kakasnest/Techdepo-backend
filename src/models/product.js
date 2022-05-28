@@ -12,6 +12,7 @@ const productSchema = new Schema(
     description: {
       type: String,
       trim: true,
+      default: "",
     },
     images: [String],
     stock: {
@@ -20,9 +21,18 @@ const productSchema = new Schema(
         validator: Number.isInteger,
         message: "{VALUE} is not an integer",
       },
+      default: 0,
     },
-    price: Number,
+    price: {
+      type: Number,
+      default: 9999,
+    },
     categories: [{ type: Schema.Types.ObjectId, ref: "Category" }],
+    isActive: {
+      type: Boolean,
+      default: false,
+      select: false,
+    },
   },
   {
     collection: "products",
