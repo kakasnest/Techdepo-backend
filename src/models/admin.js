@@ -15,7 +15,10 @@ const adminSchema = new Schema(
       trim: true,
       required: true,
     },
-    image: String,
+    image: {
+      type: String,
+      default: "/api/images/default/default/profile.png",
+    },
   },
   {
     collection: "admins",
