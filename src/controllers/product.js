@@ -29,7 +29,11 @@ export const createProduct = async (req, res) => {
     body: { name, description, stock, price, categories },
     files,
   } = req;
-  const images = files.map((f) => join(sep, "api", f.path));
+  const images = files.map((f) => {
+    const defaultPath = join(sep, "api", f.path);
+    const image = defaultPath.replaceAll("\\", "/");
+    return image;
+  });
 
   try {
     await Product.create({

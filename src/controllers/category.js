@@ -16,7 +16,8 @@ export const createCategory = async (req, res) => {
     body: { name },
     file: { path },
   } = req;
-  const image = join(sep, "api", path);
+  const defaultPath = join(sep, "api", path);
+  const image = defaultPath.replaceAll("\\", "/");
 
   try {
     await Category.create({ name, image });
