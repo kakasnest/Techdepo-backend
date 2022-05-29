@@ -26,7 +26,7 @@ export const getReviewsByUserId = async (req, res) => {
 
 export const getReviewsByProductId = async (req, res) => {
   const {
-    body: { productId },
+    params: { productId },
   } = req;
 
   try {

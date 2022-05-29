@@ -10,7 +10,7 @@ import auth from "../middlewares/auth.js";
 const router = Router();
 router.use(auth);
 
-router.route("/:id").get(getAddressById);
+router.route("/by_id/:id").get(getAddressById);
 router.route("/by_user").get(getAddressesByUserId);
 router.route("/").post(createAddress);
 

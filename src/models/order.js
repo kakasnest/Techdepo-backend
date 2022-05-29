@@ -16,7 +16,14 @@ const orderSchema = new Schema(
           ref: "Product",
           required: true,
         },
-        quantity: Number,
+        quantity: {
+          type: Number,
+          validate: {
+            validator: Number.isInteger,
+            message: "{VALUE} is not an integer",
+          },
+          required: true,
+        },
       },
     ],
     userId: {
