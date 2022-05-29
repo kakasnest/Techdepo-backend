@@ -9,7 +9,10 @@ const categorySchema = new Schema(
       required: true,
       unique: true,
     },
-    image: String,
+    image: {
+      type: String,
+      default: "/api/images/default/placeholder.png",
+    },
   },
   {
     collection: "categories",
