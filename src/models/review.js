@@ -11,6 +11,12 @@ const reviewSchema = new Schema(
     rating: {
       type: Number,
       required: true,
+      validate: {
+        validator: function (v) {
+          return Number.isInteger(v) && !(v < 0) && !(v > 5);
+        },
+        message: "Stock must be greater than or equal to zero",
+      },
     },
     userId: {
       type: Schema.Types.ObjectId,

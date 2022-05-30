@@ -21,13 +21,21 @@ const productSchema = new Schema(
     stock: {
       type: Number,
       validate: {
-        validator: Number.isInteger,
-        message: "{VALUE} is not an integer",
+        validator: function (v) {
+          return Number.isInteger(v) && !(v < 0);
+        },
+        message: "Stock must be greater than or equal to zero",
       },
       default: 0,
     },
     price: {
       type: Number,
+      validate: {
+        validator: function (v) {
+          return !(v < 0);
+        },
+        message: "Stock must be greater than or equal to zero",
+      },
       default: 9999,
     },
     categories: [

@@ -11,8 +11,10 @@ const orderLineSchema = new Schema(
     quantity: {
       type: Number,
       validate: {
-        validator: Number.isInteger,
-        message: "{VALUE} is not an integer",
+        validator: function (v) {
+          return Number.isInteger(v) && v > 0;
+        },
+        message: "Quantity must be a positive integer",
       },
       required: true,
     },
