@@ -41,14 +41,15 @@ export const createOrder = async (req, res) => {
   try {
     const { id: orderId } = await Order.create({ userId });
     try {
+      const orderLinesWithOrderId = [];
       for (let i = 0; i < orderLines.length; i++) {
         const { productId, quantity } = orderLines[i];
-        await OrderLine.create({ productId, quantity, orderId });
+        orderLinesWithOrderId.push({ productId, quantity, orderId });
       }
+      await OrderLine.insertMany(orderLinesWithOrderId);
       res.status(200).json({ message: "Order created" });
     } catch (err) {
       await Order.findByIdAndDelete(orderId);
-      await OrderLine.deleteMany({ orderId });
       res.status(500).json({ message: err.message });
     }
   } catch (err) {
