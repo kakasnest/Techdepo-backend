@@ -22,6 +22,7 @@ const orderLineSchema = new Schema(
       type: Schema.Types.ObjectId,
       required: true,
       ref: "Order",
+      index: true,
     },
   },
   {

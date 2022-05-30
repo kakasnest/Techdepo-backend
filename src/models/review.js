@@ -22,6 +22,7 @@ const reviewSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
+      index: true,
     },
     productId: {
       type: Schema.Types.ObjectId,

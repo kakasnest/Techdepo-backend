@@ -7,6 +7,7 @@ const addressSchema = new Schema(
       type: Schema.Types.ObjectId,
       required: true,
       ref: "User",
+      index: true,
     },
     name: {
       type: String,
