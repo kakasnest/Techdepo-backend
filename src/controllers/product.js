@@ -25,29 +25,33 @@ export const getProducts = async (req, res) => {
 };
 
 export const createProduct = async (req, res) => {
-  const {
-    body: { name, description, stock, price, categories },
-    files,
-  } = req;
-  const images = files.map((f) => {
-    const defaultPath = join(sep, "api", f.path);
-    const image = defaultPath.replaceAll("\\", "/");
-    return image;
-  });
+  const product = checkFiles(req);
 
   try {
-    await Product.create({
-      name,
-      description,
-      stock,
-      price,
-      categories,
-      images,
-    });
+    await Product.create(product);
     res.status(201).json({ message: "Product created" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
+};
+
+const checkFiles = (req) => {
+  const {
+    body: { name, description, stock, price, categories },
+    files,
+  } = req;
+
+  if (files.length > 0) {
+    const images = files.map((f) => {
+      const defaultPath = join(sep, "api", f.path);
+      const image = defaultPath.replaceAll("\\", "/");
+      return image;
+    });
+
+    return { name, description, stock, price, categories, images };
+  }
+
+  return { name, description, stock, price, categories };
 };
 
 // export const deleteProduct = async (req, res) => {
