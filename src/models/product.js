@@ -38,9 +38,11 @@ const productSchema = new Schema(
       },
       default: 9999,
     },
-    categories: [
-      { type: Schema.Types.ObjectId, ref: "Category", required: true },
-    ],
+    categories: {
+      type: [Schema.Types.ObjectId],
+      ref: "Category",
+      default: [],
+    },
     isActive: {
       type: Boolean,
       default: false,

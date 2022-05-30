@@ -31,36 +31,16 @@ export const createOrder = async (req, res) => {
     userId,
   } = req;
 
-  if (checkLines(orderLines)) {
-    try {
-      const { id: orderId } = await Order.create({ userId });
-      orderLines.forEach(async (line) => {
-        const { productId, quantity } = line;
-        await OrderLine.create({ productId, quantity, orderId });
-      });
-      res.status(200).json({ message: "Order created" });
-    } catch (err) {
-      res.status(500).json({ message: err.message });
+  try {
+    const { id: orderId } = await Order.create({ userId });
+    for (let i = 0; i < orderLines.length; i++) {
+      const { productId, quantity } = orderLines[i];
+      await OrderLine.create({ productId, quantity, orderId });
     }
-  } else {
-    res
-      .status(500)
-      .json({ message: "An order requires a productId and quantity" });
+    res.status(200).json({ message: "Order created" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
-};
-
-const checkLines = (orderLines) => {
-  let hasRequiredProps = true;
-  orderLines.forEach((line) => {
-    if (
-      !(line.hasOwnProperty("productId") && line.hasOwnProperty("quantity"))
-    ) {
-      hasRequiredProps = false;
-      return;
-    }
-  });
-
-  return hasRequiredProps;
 };
 
 // export const deleteOrder = async (req, res) => {
