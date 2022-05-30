@@ -9,23 +9,6 @@ const orderSchema = new Schema(
       default: "CREATED",
       uppercase: true,
     },
-    orderLines: [
-      {
-        product: {
-          type: Schema.Types.ObjectId,
-          ref: "Product",
-          required: true,
-        },
-        quantity: {
-          type: Number,
-          validate: {
-            validator: Number.isInteger,
-            message: "{VALUE} is not an integer",
-          },
-          required: true,
-        },
-      },
-    ],
     userId: {
       type: Schema.Types.ObjectId,
       required: true,

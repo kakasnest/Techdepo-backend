@@ -1,4 +1,5 @@
 import Order from "../models/order.js";
+import OrderLine from "../models/orderLine.js";
 
 export const getOrderById = async (req, res) => {
   const {
@@ -30,12 +31,36 @@ export const createOrder = async (req, res) => {
     userId,
   } = req;
 
-  try {
-    await Order.create({ orderLines, userId });
-    res.status(200).json({ message: "Order created" });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+  if (checkLines(orderLines)) {
+    try {
+      const { id: orderId } = await Order.create({ userId });
+      orderLines.forEach(async (line) => {
+        const { productId, quantity } = line;
+        await OrderLine.create({ productId, quantity, orderId });
+      });
+      res.status(200).json({ message: "Order created" });
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  } else {
+    res
+      .status(500)
+      .json({ message: "An order requires a productId and quantity" });
   }
+};
+
+const checkLines = (orderLines) => {
+  let hasRequiredProps = true;
+  orderLines.forEach((line) => {
+    if (
+      !(line.hasOwnProperty("productId") && line.hasOwnProperty("quantity"))
+    ) {
+      hasRequiredProps = false;
+      return;
+    }
+  });
+
+  return hasRequiredProps;
 };
 
 // export const deleteOrder = async (req, res) => {
