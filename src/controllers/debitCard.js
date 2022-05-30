@@ -29,9 +29,18 @@ export const createDebitCard = async (req, res) => {
     body: { name, expDate, cardNumber, cvv },
     userId,
   } = req;
+  const month = expDate.split("/")[0];
+  const year = "20" + expDate.split("/")[1];
+  const expirationDate = new Date(year, month);
 
   try {
-    await DebitCard.create({ name, expDate, cardNumber, cvv, userId });
+    await DebitCard.create({
+      name,
+      expDate: expirationDate,
+      cardNumber,
+      cvv,
+      userId,
+    });
     res.status(200).json({ message: "Debit card created" });
   } catch (err) {
     res.status(500).json({ message: err.message });

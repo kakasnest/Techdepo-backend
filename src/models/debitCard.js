@@ -9,8 +9,7 @@ const debitCardSchema = new Schema(
       required: true,
     },
     expDate: {
-      type: String,
-      trim: true,
+      type: Date,
       required: true,
     },
     cardNumber: {
