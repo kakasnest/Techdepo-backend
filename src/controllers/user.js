@@ -6,9 +6,8 @@ export const getUserById = async (req, res) => {
   } = req;
 
   try {
-    const userToGet = await User.findById(id);
-    console.log(userToGet.fullName);
-    res.status(200).json(userToGet);
+    const user = await User.findById(id);
+    res.status(200).json(user);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

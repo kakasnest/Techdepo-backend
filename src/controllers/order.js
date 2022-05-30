@@ -7,8 +7,9 @@ export const getOrderById = async (req, res) => {
   } = req;
 
   try {
-    const orderToGet = await Order.findById(id);
-    res.status(200).json(orderToGet);
+    const order = await Order.findById(id);
+    const orderLines = await OrderLine.find({ orderId: id });
+    res.status(200).json({ order, orderLines });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -19,7 +20,13 @@ export const getOrdersByUserId = async (req, res) => {
 
   try {
     const orders = await Order.find({ userId });
-    res.status(200).json(orders);
+    const orderLines = [];
+    for (let i = 0; i < orders.length; i++) {
+      const orderId = orders[i].id;
+      const orderLinesByOrder = await OrderLine.find({ orderId });
+      orderLines.push(orderLinesByOrder);
+    }
+    res.status(200).json({ orders, orderLines });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
