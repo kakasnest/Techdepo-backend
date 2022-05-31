@@ -13,7 +13,7 @@ export const getProductById = async (req, res) => {
 
   try {
     const product = await Product.findById(id)
-      .select(["-createdAt", "-updatedAt", "-__v"])
+      .select(["-createdAt", "-updatedAt", "-__v", "-thumbnail"])
       .populate({
         path: "categories",
         model: "Category",
@@ -42,7 +42,16 @@ export const getProductsByCategory = async (req, res) => {
       "-images",
       "-categories",
     ]);
-    res.status(200).json(products);
+    const ratingsOfProducts = [];
+    for (let i = 0; i < products.length; i++) {
+      const { id } = products[i];
+      const ratingOfProduct = await Review.aggregate([
+        { $match: { productId: ObjectId(id) } },
+        { $group: { _id: "$productId", rating: { $avg: "$rating" } } },
+      ]);
+      ratingsOfProducts.push(ratingOfProduct);
+    }
+    res.status(200).json({ products, ratingsOfProducts });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

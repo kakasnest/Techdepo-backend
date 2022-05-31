@@ -6,8 +6,14 @@ export const getReviewById = async (req, res) => {
   } = req;
 
   try {
-    const reviewToGet = await Review.findById(id);
-    res.status(200).json(reviewToGet);
+    const review = await Review.findById(id)
+      .select(["-createdAt", "-updatedAt", "-__v", "-userId"])
+      .populate({
+        path: "productId",
+        model: "Product",
+        select: ["name", "thumbnail"],
+      });
+    res.status(200).json(review);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -17,7 +23,13 @@ export const getReviewsByUserId = async (req, res) => {
   const { userId } = req;
 
   try {
-    const reviews = await Review.find({ userId });
+    const reviews = await Review.find({ userId })
+      .select(["rating", "text"])
+      .populate({
+        path: "productId",
+        model: "Product",
+        select: ["name", "thumbnail"],
+      });
     res.status(200).json(reviews);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -30,7 +42,13 @@ export const getReviewsByProductId = async (req, res) => {
   } = req;
 
   try {
-    const reviews = await Review.find({ productId });
+    const reviews = await Review.find({ productId })
+      .select(["text", "rating", "userId"])
+      .populate({
+        path: "userId",
+        model: "User",
+        select: ["fullNameHUN", "fullNameENG", "image"],
+      });
     res.status(200).json(reviews);
   } catch (err) {
     res.status(500).json({ message: err.message });
