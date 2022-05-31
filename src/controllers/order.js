@@ -1,5 +1,9 @@
+import mongoose from "mongoose";
+
 import Order from "../models/order.js";
 import OrderLine from "../models/orderLine.js";
+
+const { ObjectId } = mongoose.Types;
 
 export const getOrderById = async (req, res) => {
   const {
@@ -7,8 +11,30 @@ export const getOrderById = async (req, res) => {
   } = req;
 
   try {
-    const order = await Order.findById(id);
-    const orderLines = await OrderLine.find({ orderId: id });
+    const order = await Order.findById(id).select(["state", "userId"]);
+    const orderLines = await OrderLine.aggregate([
+      { $match: { orderId: ObjectId(id) } },
+      {
+        $lookup: {
+          from: "products",
+          localField: "productId",
+          foreignField: "_id",
+          as: "product",
+        },
+      },
+      {
+        $unwind: "$product",
+      },
+      {
+        $project: {
+          quantity: 1,
+          "product.price": 1,
+          "product.thumbnail": 1,
+          "product.name": 1,
+          totalPerProduct: { $multiply: ["$product.price", "$quantity"] },
+        },
+      },
+    ]);
     res.status(200).json({ order, orderLines });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -19,12 +45,34 @@ export const getOrdersByUserId = async (req, res) => {
   const { userId } = req;
 
   try {
-    const orders = await Order.find({ userId });
+    const orders = await Order.find({ userId }).select(["state", "createdAt"]);
     const orderLines = [];
     for (let i = 0; i < orders.length; i++) {
       const orderId = orders[i].id;
-      const orderLinesByOrder = await OrderLine.find({ orderId });
-      orderLines.push(orderLinesByOrder);
+      const orderLinesByOrder = await OrderLine.aggregate([
+        { $match: { orderId: ObjectId(orderId) } },
+        {
+          $lookup: {
+            from: "products",
+            localField: "productId",
+            foreignField: "_id",
+            as: "product",
+          },
+        },
+        {
+          $unwind: "$product",
+        },
+        {
+          $project: {
+            quantity: 1,
+            "product.price": 1,
+            "product.thumbnail": 1,
+            orderId: 1,
+            totalPerProduct: { $multiply: ["$product.price", "$quantity"] },
+          },
+        },
+      ]);
+      orderLines.push(...orderLinesByOrder);
     }
     res.status(200).json({ orders, orderLines });
   } catch (err) {

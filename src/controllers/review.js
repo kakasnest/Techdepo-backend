@@ -23,13 +23,11 @@ export const getReviewsByUserId = async (req, res) => {
   const { userId } = req;
 
   try {
-    const reviews = await Review.find({ userId })
-      .select(["rating", "text"])
-      .populate({
-        path: "productId",
-        model: "Product",
-        select: ["name", "thumbnail"],
-      });
+    const reviews = await Review.find({ userId }).select("rating").populate({
+      path: "productId",
+      model: "Product",
+      select: "thumbnail",
+    });
     res.status(200).json(reviews);
   } catch (err) {
     res.status(500).json({ message: err.message });
