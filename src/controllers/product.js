@@ -8,16 +8,28 @@ export const getProductById = async (req, res) => {
   } = req;
 
   try {
-    const product = await Product.findById(id);
+    const product = await Product.findById(id).populate({
+      path: "categories",
+      model: "Category",
+      select: "name",
+    });
     res.status(200).json(product);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
 
-export const getProducts = async (req, res) => {
+export const getProductsByCategory = async (req, res) => {
+  const {
+    body: { category },
+  } = req;
+
   try {
-    const products = await Product.find();
+    const products = await Product.find({ categories: category }).populate({
+      path: "categories",
+      model: "Category",
+      select: "name",
+    });
     res.status(200).json(products);
   } catch (err) {
     res.status(500).json({ message: err.message });
