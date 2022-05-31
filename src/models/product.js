@@ -18,6 +18,10 @@ const productSchema = new Schema(
       type: [String],
       default: ["/api/images/default/placeholder.png"],
     },
+    thumbnail: {
+      type: String,
+      default: "/api/images/default/placeholder.png",
+    },
     stock: {
       type: Number,
       validate: {

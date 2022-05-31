@@ -1,6 +1,10 @@
 import { join, sep } from "path";
+import mongoose from "mongoose";
 
 import Product from "../models/product.js";
+import Review from "../models/review.js";
+
+const { ObjectId } = mongoose.Types;
 
 export const getProductById = async (req, res) => {
   const {
@@ -13,7 +17,11 @@ export const getProductById = async (req, res) => {
       model: "Category",
       select: "name",
     });
-    res.status(200).json(product);
+    const ratingOfProduct = await Review.aggregate([
+      { $match: { productId: ObjectId(id) } },
+      { $group: { _id: "$productId", rating: { $avg: "$rating" } } },
+    ]);
+    res.status(200).json({ product, ratingOfProduct });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -25,11 +33,13 @@ export const getProductsByCategory = async (req, res) => {
   } = req;
 
   try {
-    const products = await Product.find({ categories: category }).populate({
-      path: "categories",
-      model: "Category",
-      select: "name",
-    });
+    const products = await Product.find({ categories: category }).select([
+      "stock",
+      "price",
+      "name",
+      "description",
+      "thumbnail",
+    ]);
     res.status(200).json(products);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -60,7 +70,15 @@ const checkFiles = (req) => {
       return image;
     });
 
-    return { name, description, stock, price, categories, images };
+    return {
+      name,
+      description,
+      stock,
+      price,
+      categories,
+      images,
+      thumbnail: images[0],
+    };
   }
 
   return { name, description, stock, price, categories };
