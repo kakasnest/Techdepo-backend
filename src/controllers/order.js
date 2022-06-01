@@ -93,13 +93,20 @@ export const createOrder = async (req, res) => {
   try {
     const { id: orderId } = await Order.create({ userId });
     try {
-      const orderLinesWithOrderId = [];
-      for (let i = 0; i < orderLines.length; i++) {
-        const { productId, quantity } = orderLines[i];
-        orderLinesWithOrderId.push({ productId, quantity, orderId });
+      if (orderLines && Array.isArray(orderLines) && orderLines.length > 0) {
+        const orderLinesWithOrderId = [];
+        for (let i = 0; i < orderLines.length; i++) {
+          const { productId, quantity } = orderLines[i];
+          orderLinesWithOrderId.push({ productId, quantity, orderId });
+        }
+        await OrderLine.insertMany(orderLinesWithOrderId);
+        res.status(200).json({ message: "Order created" });
+      } else {
+        res.status(500).json({
+          message:
+            "Field orderLines is required and must be an array of objects containing productIds and quantities",
+        });
       }
-      await OrderLine.insertMany(orderLinesWithOrderId);
-      res.status(200).json({ message: "Order created" });
     } catch (err) {
       await Order.findByIdAndDelete(orderId);
       res.status(500).json({ message: err.message });

@@ -59,41 +59,31 @@ export const getProductsByCategory = async (req, res) => {
 };
 
 export const createProduct = async (req, res) => {
-  const product = checkFiles(req);
-
-  try {
-    await Product.create(product);
-    res.status(201).json({ message: "Product created" });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
-
-const checkFiles = (req) => {
   const {
     body: { name, description, stock, price, categories },
     files,
   } = req;
 
-  if (files.length > 0) {
-    const images = files.map((f) => {
-      const defaultPath = join(sep, "api", f.path);
-      const image = defaultPath.replaceAll("\\", "/");
-      return image;
-    });
-
-    return {
-      name,
-      description,
-      stock,
-      price,
-      categories,
-      images,
-      thumbnail: images[0],
-    };
+  try {
+    const product = { name, description, stock, price, categories };
+    if (files.length > 0) {
+      const images = files.map((f) => {
+        const defaultPath = join(sep, "api", f.path);
+        const image = defaultPath.replaceAll("\\", "/");
+        return image;
+      });
+      await Product.create({
+        ...product,
+        images,
+        thumbnail: images[0],
+      });
+    } else {
+      await Product.create(product);
+    }
+    res.status(201).json({ message: "Product created" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
-
-  return { name, description, stock, price, categories };
 };
 
 // export const deleteProduct = async (req, res) => {

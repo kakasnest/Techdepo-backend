@@ -12,32 +12,24 @@ export const getCategories = async (req, res) => {
 };
 
 export const createCategory = async (req, res) => {
-  const category = checkFile(req);
+  const {
+    body: { name },
+    file,
+  } = req;
 
   try {
-    await Category.create(category);
+    if (file) {
+      const { path } = file;
+      const defaultPath = join(sep, "api", path);
+      const image = defaultPath.replaceAll("\\", "/");
+      await Category.create({ name, image });
+    } else {
+      await Category.create({ name });
+    }
     res.status(200).json({ message: "Category created" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
-};
-
-const checkFile = (req) => {
-  const {
-    body: { name },
-  } = req;
-
-  if (req.file) {
-    const {
-      file: { path },
-    } = req;
-    const defaultPath = join(sep, "api", path);
-    const image = defaultPath.replaceAll("\\", "/");
-
-    return { name, image };
-  }
-
-  return { name };
 };
 
 // export const deleteCategory = async (req, res) => {
