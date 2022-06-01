@@ -7,13 +7,13 @@ const adminSchema = new Schema(
       type: String,
       trim: true,
       unique: true,
-      required: true,
+      required: [true, "Username is required"],
     },
     password: {
       select: false,
       type: String,
       trim: true,
-      required: true,
+      required: [true, "Password is required"],
     },
     image: {
       type: String,

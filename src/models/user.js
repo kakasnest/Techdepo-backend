@@ -17,13 +17,13 @@ const userSchema = new Schema(
       type: String,
       trim: true,
       unique: true,
-      required: true,
+      required: [true, "Email is required"],
     },
     password: {
       select: false,
       type: String,
       trim: true,
-      required: true,
+      required: [true, "Password is required"],
     },
     verified: {
       type: Boolean,

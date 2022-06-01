@@ -11,7 +11,7 @@ const orderSchema = new Schema(
     },
     userId: {
       type: Schema.Types.ObjectId,
-      required: true,
+      required: [true, "User must be logged in to create their an order"],
       ref: "User",
       index: true,
     },

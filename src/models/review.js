@@ -13,21 +13,27 @@ const reviewSchema = new Schema(
       required: true,
       validate: {
         validator: function (v) {
-          return Number.isInteger(v) && !(v < 0) && !(v > 5);
+          return Number.isInteger(v) && !(v < 1) && !(v > 5);
         },
-        message: "Stock must be greater than or equal to zero",
+        message: "The rating of the review must be an integer between 1 and 5",
       },
     },
     userId: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      required: [
+        true,
+        "User must be logged in to create a review for a product",
+      ],
       index: true,
     },
     productId: {
       type: Schema.Types.ObjectId,
       ref: "Product",
-      required: true,
+      required: [
+        true,
+        "At least one ProductId is required to create a valid review",
+      ],
       index: true,
     },
   },

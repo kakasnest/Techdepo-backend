@@ -6,7 +6,7 @@ const categorySchema = new Schema(
     name: {
       type: String,
       trim: true,
-      required: true,
+      required: [true, "Name of category is required"],
       unique: true,
     },
     image: {

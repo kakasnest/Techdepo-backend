@@ -6,7 +6,10 @@ const orderLineSchema = new Schema(
     productId: {
       type: Schema.Types.ObjectId,
       ref: "Product",
-      required: true,
+      required: [
+        true,
+        "At least one ProductId is required to create valid order",
+      ],
     },
     quantity: {
       type: Number,
@@ -14,7 +17,8 @@ const orderLineSchema = new Schema(
         validator: function (v) {
           return Number.isInteger(v) && v > 0;
         },
-        message: "Quantity must be a positive integer",
+        message:
+          "Quantity of the ordered product must be a positive integer greater than zero",
       },
       required: true,
     },

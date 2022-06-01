@@ -6,7 +6,7 @@ const productSchema = new Schema(
     name: {
       type: String,
       trim: true,
-      required: true,
+      required: [true, "Name of product is required"],
       unique: true,
     },
     description: {
@@ -28,7 +28,8 @@ const productSchema = new Schema(
         validator: function (v) {
           return Number.isInteger(v) && !(v < 0);
         },
-        message: "Stock must be greater than or equal to zero",
+        message:
+          "The number of product in stock must be greater than or equal to zero",
       },
       default: 0,
     },
@@ -38,9 +39,9 @@ const productSchema = new Schema(
         validator: function (v) {
           return !(v < 0);
         },
-        message: "Stock must be greater than or equal to zero",
+        message: "Price of product must be greater than or equal to zero",
       },
-      default: 9999,
+      default: 0,
     },
     categories: {
       type: [Schema.Types.ObjectId],
