@@ -37,7 +37,7 @@ export const getOrderById = async (req, res) => {
         },
       },
     ]);
-    res.status(200).json({ order, orderLines });
+    res.status(200).json({ ...order.toObject(), id: order._id, orderLines });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -48,7 +48,7 @@ export const getOrdersByUserId = async (req, res) => {
 
   try {
     const orders = await Order.find({ userId }).select(["state", "createdAt"]);
-    const orderLines = [];
+    const orderLinesData = [];
     for (let i = 0; i < orders.length; i++) {
       const orderId = orders[i].id;
       const orderLinesByOrder = await OrderLine.aggregate([
@@ -76,9 +76,15 @@ export const getOrdersByUserId = async (req, res) => {
           },
         },
       ]);
-      orderLines.push(...orderLinesByOrder);
+      orderLinesData.push(...orderLinesByOrder);
     }
-    res.status(200).json({ orders, orderLines });
+    const response = orders.map((o) => {
+      const orderLines = orderLinesData.filter((l) => {
+        return l.orderId.toString() === o.id;
+      });
+      return { ...o.toObject(), id: o._id, orderLines };
+    });
+    res.status(200).json(response);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

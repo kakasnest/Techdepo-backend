@@ -19,11 +19,50 @@ export const getProductById = async (req, res) => {
         model: "Category",
         select: "name",
       });
-    const ratingOfProduct = await Review.aggregate([
-      { $match: { productId: ObjectId(id) } },
-      { $group: { _id: "$productId", rating: { $avg: "$rating" } } },
+    const ratingData = await Review.aggregate([
+      {
+        $facet: {
+          productRating: [
+            { $match: { productId: ObjectId(id) } },
+            {
+              $group: { _id: "$productId", rating: { $avg: "$rating" } },
+            },
+          ],
+          productRatingCount: [
+            { $match: { productId: ObjectId(id) } },
+            {
+              $count: "ratingCount",
+            },
+          ],
+        },
+      },
+      {
+        $unwind: "$productRating",
+      },
+      {
+        $unwind: "$productRatingCount",
+      },
+      {
+        $addFields: {
+          merged: {
+            $mergeObjects: ["$productRating", "$productRatingCount"],
+          },
+        },
+      },
+      {
+        $project: {
+          rating: "$merged.rating",
+          ratingCount: "$merged.ratingCount",
+          id: "$merged._id",
+        },
+      },
     ]);
-    res.status(200).json({ product, ratingOfProduct });
+
+    const rating = ratingData[0];
+    const categories = product.categories.map((c) => {
+      return { ...c.toObject(), id: c._id };
+    });
+    res.status(200).json({ ...product.toObject(), ...rating, categories });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -43,16 +82,58 @@ export const getProductsByCategory = async (req, res) => {
       "-categories",
       "-description",
     ]);
-    const ratingsOfProducts = [];
+    const ratingsData = [];
     for (let i = 0; i < products.length; i++) {
       const { id } = products[i];
-      const ratingOfProduct = await Review.aggregate([
-        { $match: { productId: ObjectId(id) } },
-        { $group: { _id: "$productId", rating: { $avg: "$rating" } } },
+      const ratingData = await Review.aggregate([
+        {
+          $facet: {
+            productRating: [
+              { $match: { productId: ObjectId(id) } },
+              {
+                $group: { _id: "$productId", rating: { $avg: "$rating" } },
+              },
+            ],
+            productRatingCount: [
+              { $match: { productId: ObjectId(id) } },
+              {
+                $count: "ratingCount",
+              },
+            ],
+          },
+        },
+        {
+          $unwind: "$productRating",
+        },
+        {
+          $unwind: "$productRatingCount",
+        },
+        {
+          $addFields: {
+            merged: {
+              $mergeObjects: ["$productRating", "$productRatingCount"],
+            },
+          },
+        },
+        {
+          $project: {
+            rating: "$merged.rating",
+            ratingCount: "$merged.ratingCount",
+            id: "$merged._id",
+          },
+        },
       ]);
-      ratingsOfProducts.push(ratingOfProduct);
+      ratingsData.push(ratingData);
     }
-    res.status(200).json({ products, ratingsOfProducts });
+    const ratings = ratingsData.filter((r) => r.length > 0).map((r) => r[0]);
+    const response = products.map((p) => {
+      const hasRatings = ratings.find((r) => {
+        return r.id.toString() === p.id;
+      });
+      if (hasRatings) return { ...p.toObject(), ...hasRatings };
+      return p;
+    });
+    res.status(200).json(response);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
