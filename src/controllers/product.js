@@ -41,6 +41,7 @@ export const getProductsByCategory = async (req, res) => {
       "-__v",
       "-images",
       "-categories",
+      "-description",
     ]);
     const ratingsOfProducts = [];
     for (let i = 0; i < products.length; i++) {
