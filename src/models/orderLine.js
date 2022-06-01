@@ -20,7 +20,7 @@ const orderLineSchema = new Schema(
         message:
           "Quantity of the ordered product must be a positive integer greater than zero",
       },
-      required: true,
+      required: [true, "Quantity of the ordered product is required"],
     },
     orderId: {
       type: Schema.Types.ObjectId,

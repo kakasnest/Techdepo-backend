@@ -10,12 +10,12 @@ const reviewSchema = new Schema(
     },
     rating: {
       type: Number,
-      required: true,
+      required: [true, "Rating of the product is required"],
       validate: {
         validator: function (v) {
           return Number.isInteger(v) && !(v < 1) && !(v > 5);
         },
-        message: "The rating of the review must be an integer between 1 and 5",
+        message: "Rating of the review must be an integer between 1 and 5",
       },
     },
     userId: {
