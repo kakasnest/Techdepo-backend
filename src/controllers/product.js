@@ -70,11 +70,11 @@ export const getProductById = async (req, res) => {
 
 export const getProductsByCategory = async (req, res) => {
   const {
-    body: { category },
+    body: { categoryId },
   } = req;
 
   try {
-    const products = await Product.find({ categories: category }).select([
+    const products = await Product.find({ categories: categoryId }).select([
       "-createdAt",
       "-updatedAt",
       "-__v",
