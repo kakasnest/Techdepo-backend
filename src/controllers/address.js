@@ -51,18 +51,18 @@ export const createAddress = async (req, res) => {
   }
 };
 
-// export const deleteAddress = async (req, res) => {
-//   const {
-//     params: { id },
-//   } = req;
+export const deleteAddressById = async (req, res) => {
+  const {
+    params: { id },
+  } = req;
 
-//   try {
-//     await Address.findByIdAndDelete(id);
-//     res.status(200).json({ message: "Address deleted" });
-//   } catch (err) {
-//     res.status(500).json({ message: err.message });
-//   }
-// };
+  try {
+    await Address.findByIdAndDelete(id);
+    res.status(200).json({ message: "Address deleted" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 
 // export const updateAddress = async (req, res) => {
 //   const {

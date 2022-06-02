@@ -122,19 +122,6 @@ export const createOrder = async (req, res) => {
   }
 };
 
-// export const deleteOrder = async (req, res) => {
-//   const {
-//     params: { id },
-//   } = req;
-
-//   try {
-//     await Order.findByIdAndDelete(id);
-//     res.status(200).json({ message: "Order deleted" });
-//   } catch (err) {
-//     res.status(500).json({ message: err.message });
-//   }
-// };
-
 // export const updateOrder = async (req, res) => {
 //   const {
 //     params: { id },

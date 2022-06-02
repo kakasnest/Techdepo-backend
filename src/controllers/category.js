@@ -1,4 +1,5 @@
 import { join, sep } from "path";
+import { unlink } from "fs";
 
 import Category from "../models/category.js";
 
@@ -32,18 +33,20 @@ export const createCategory = async (req, res) => {
   }
 };
 
-// export const deleteCategory = async (req, res) => {
-//   const {
-//     params: { id },
-//   } = req;
+export const deleteCategoryById = async (req, res) => {
+  const {
+    params: { id },
+  } = req;
 
-//   try {
-//     await Category.findByIdAndDelete(id);
-//     res.status(200).json({ message: "Category deleted" });
-//   } catch (err) {
-//     res.status(500).json({ message: err.message });
-//   }
-// };
+  try {
+    const { image } = await Category.findByIdAndDelete(id);
+    // unlink();
+    console.log(image);
+    res.status(200).json({ message: "Category deleted" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 
 // export const updateCategory = async (req, res) => {
 //   const {

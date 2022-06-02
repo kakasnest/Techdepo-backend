@@ -1,11 +1,12 @@
 import mongoose from "mongoose";
 
 const {
-  env: { URI },
+  env: { URI, NODE_ENV: env },
 } = process;
 
 const connect = async () => {
-  mongoose.connect(URI);
+  if (env === "PRODUCTION") mongoose.connect(URI);
+  else mongoose.connect(URI);
 
   mongoose.connection
     .once("open", async () => {
