@@ -1,6 +1,5 @@
 import { Router, static as serve } from "express";
 
-import { getHeartBeat } from "../controllers/heartbeat.js";
 import category from "./category.js";
 import product from "./product.js";
 import admin from "./admin.js";
@@ -19,7 +18,5 @@ router.use("/reviews", review);
 router.use("/addresses", address);
 router.use("/orders", order);
 router.use("/auth", entry);
-
-router.route("/").get(getHeartBeat);
 
 export default router;

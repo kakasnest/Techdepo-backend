@@ -1,33 +1,16 @@
 import Review from "../models/review.js";
 
-export const getReviewById = async (req, res) => {
-  const {
-    params: { id },
-  } = req;
+export const getReviewsByUserId = async (req, res) => {
+  const { userId } = req;
 
   try {
-    const review = await Review.findById(id)
+    const reviews = await Review.find({ userId })
       .select(["-createdAt", "-updatedAt", "-__v", "-userId"])
       .populate({
         path: "productId",
         model: "Product",
         select: ["name", "thumbnail"],
       });
-    res.status(200).json(review);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
-
-export const getReviewsByUserId = async (req, res) => {
-  const { userId } = req;
-
-  try {
-    const reviews = await Review.find({ userId }).select("rating").populate({
-      path: "productId",
-      model: "Product",
-      select: "thumbnail",
-    });
     res.status(200).json(reviews);
   } catch (err) {
     res.status(500).json({ message: err.message });
