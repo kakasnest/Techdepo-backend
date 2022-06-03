@@ -74,7 +74,10 @@ export const getProductsByCategory = async (req, res) => {
   } = req;
 
   try {
-    const products = await Product.find({ categories: categoryId }).select([
+    const products = await Product.find({
+      categories: categoryId,
+      isActive: true,
+    }).select([
       "-createdAt",
       "-updatedAt",
       "-__v",
@@ -141,12 +144,12 @@ export const getProductsByCategory = async (req, res) => {
 
 export const createProduct = async (req, res) => {
   const {
-    body: { name, description, stock, price, categories },
+    body: { name, description, stock, price, categories, isActive },
     files,
   } = req;
 
   try {
-    const product = { name, description, stock, price, categories };
+    const product = { name, description, stock, price, categories, isActive };
     if (files.length > 0) {
       const images = files.map((f) => {
         const defaultPath = join(sep, "api", f.path);

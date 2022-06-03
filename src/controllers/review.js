@@ -50,18 +50,18 @@ export const createReview = async (req, res) => {
   }
 };
 
-// export const deleteReview = async (req, res) => {
-//   const {
-//     params: { id },
-//   } = req;
+export const deleteReviewById = async (req, res) => {
+  const {
+    params: { id },
+  } = req;
 
-//   try {
-//     await Review.findByIdAndDelete(id);
-//     res.status(200).json({ message: "Review deleted" });
-//   } catch (err) {
-//     res.status(500).json({ message: err.message });
-//   }
-// };
+  try {
+    await Review.findByIdAndDelete(id);
+    res.status(200).json({ message: "Review deleted" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 
 // export const updateReview = async (req, res) => {
 //   const {
