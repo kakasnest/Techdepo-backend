@@ -1,4 +1,4 @@
-import { join, sep } from "path";
+import { join, sep, dirname } from "path";
 import { unlink } from "fs";
 
 import Category from "../models/category.js";
@@ -40,9 +40,20 @@ export const deleteCategoryById = async (req, res) => {
 
   try {
     const { image } = await Category.findByIdAndDelete(id);
-    // unlink();
-    console.log(image);
-    res.status(200).json({ message: "Category deleted" });
+    if (image === "/api/images/default/placeholder.png") {
+      res.status(200).json({ message: "Category deleted" });
+    } else {
+      const filename = image.split("/").pop();
+      const filePath = join(
+        dirname("."),
+        "images",
+        "category_images",
+        filename
+      );
+      unlink(filePath, () => {
+        res.status(200).json({ message: "Category deleted" });
+      });
+    }
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

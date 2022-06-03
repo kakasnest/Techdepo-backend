@@ -18,8 +18,7 @@ const storage = multer.diskStorage({
   },
   filename: (req, file, next) => {
     const random = Math.round(Math.random() * 1e9);
-    const fileExtension =
-      file.originalname.split(".")[file.originalname.split(".").length - 1];
+    const fileExtension = file.originalname.split(".").pop();
     const uniqueName = `${random}${Date.now()}.${fileExtension}`;
     next(null, uniqueName);
   },
@@ -27,4 +26,12 @@ const storage = multer.diskStorage({
 
 export const upload = multer({
   storage,
+  fileFilter: (req, file, next) => {
+    const { mimetype: type } = file;
+    if (/^(image\/).+/.test(type)) {
+      next(null, true);
+    } else {
+      next(null, false);
+    }
+  },
 });
