@@ -70,73 +70,83 @@ export const getProductById = async (req, res) => {
 
 export const getProductsByCategory = async (req, res) => {
   const {
-    body: { categoryId },
+    body: { categoryId, pageNumber },
   } = req;
 
   try {
-    const products = await Product.find({
-      categories: categoryId,
-      isActive: true,
-    }).select([
-      "-createdAt",
-      "-updatedAt",
-      "-__v",
-      "-images",
-      "-categories",
-      "-description",
-    ]);
-    const ratingsData = [];
-    for (let i = 0; i < products.length; i++) {
-      const { id } = products[i];
-      const ratingData = await Review.aggregate([
-        {
-          $facet: {
-            productRating: [
-              { $match: { productId: ObjectId(id) } },
-              {
-                $group: { _id: "$productId", rating: { $avg: "$rating" } },
-              },
-            ],
-            productRatingCount: [
-              { $match: { productId: ObjectId(id) } },
-              {
-                $count: "ratingCount",
-              },
-            ],
-          },
-        },
-        {
-          $unwind: "$productRating",
-        },
-        {
-          $unwind: "$productRatingCount",
-        },
-        {
-          $addFields: {
-            merged: {
-              $mergeObjects: ["$productRating", "$productRatingCount"],
+    if (Number.isInteger(pageNumber) && pageNumber > 0) {
+      const products = await Product.find({
+        categories: categoryId,
+        isActive: true,
+      })
+        .select([
+          "-createdAt",
+          "-updatedAt",
+          "-__v",
+          "-images",
+          "-categories",
+          "-description",
+        ])
+        .sort({ _id: 1 })
+        .skip(pageNumber > 0 ? (pageNumber - 1) * 10 : 0)
+        .limit(10);
+      const ratingsData = [];
+      for (let i = 0; i < products.length; i++) {
+        const { id } = products[i];
+        const ratingData = await Review.aggregate([
+          {
+            $facet: {
+              productRating: [
+                { $match: { productId: ObjectId(id) } },
+                {
+                  $group: { _id: "$productId", rating: { $avg: "$rating" } },
+                },
+              ],
+              productRatingCount: [
+                { $match: { productId: ObjectId(id) } },
+                {
+                  $count: "ratingCount",
+                },
+              ],
             },
           },
-        },
-        {
-          $project: {
-            rating: "$merged.rating",
-            ratingCount: "$merged.ratingCount",
-            id: "$merged._id",
+          {
+            $unwind: "$productRating",
           },
-        },
-      ]);
-      ratingsData.push(ratingData);
-    }
-    const ratings = ratingsData.filter((r) => r.length > 0).map((r) => r[0]);
-    const response = products.map((p) => {
-      const hasRatings = ratings.find((r) => {
-        return r.id.toString() === p.id;
+          {
+            $unwind: "$productRatingCount",
+          },
+          {
+            $addFields: {
+              merged: {
+                $mergeObjects: ["$productRating", "$productRatingCount"],
+              },
+            },
+          },
+          {
+            $project: {
+              rating: "$merged.rating",
+              ratingCount: "$merged.ratingCount",
+              id: "$merged._id",
+            },
+          },
+        ]);
+        ratingsData.push(ratingData);
+      }
+      const ratings = ratingsData.filter((r) => r.length > 0).map((r) => r[0]);
+      const response = products.map((p) => {
+        const hasRatings = ratings.find((r) => {
+          return r.id.toString() === p.id;
+        });
+        if (hasRatings) return { ...p.toObject(), ...hasRatings };
+        return p;
       });
-      if (hasRatings) return { ...p.toObject(), ...hasRatings };
-      return p;
-    });
-    res.status(200).json(response);
+      res.status(200).json(response);
+    } else {
+      res.status(500).json({
+        message: "The pageNumber must be an integer greater than zero",
+      });
+    }
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

@@ -18,11 +18,24 @@ export const getAddressById = async (req, res) => {
 };
 
 export const getAddressesByUserId = async (req, res) => {
-  const { userId } = req;
+  const {
+    body: { pageNumber },
+    userId,
+  } = req;
 
   try {
-    const addresses = await Address.find({ userId }).select(["name"]);
-    res.status(200).json(addresses);
+    if (Number.isInteger(pageNumber) && pageNumber > 0) {
+      const addresses = await Address.find({ userId })
+        .select(["name"])
+        .sort({ _id: 1 })
+        .skip(pageNumber > 0 ? (pageNumber - 1) * 10 : 0)
+        .limit(10);
+      res.status(200).json(addresses);
+    } else {
+      res.status(500).json({
+        message: "The pageNumber must be an integer greater than zero",
+      });
+    }
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

@@ -44,47 +44,60 @@ export const getOrderById = async (req, res) => {
 };
 
 export const getOrdersByUserId = async (req, res) => {
-  const { userId } = req;
+  const {
+    body: { pageNumber },
+    userId,
+  } = req;
 
   try {
-    const orders = await Order.find({ userId }).select(["state", "createdAt"]);
-    const orderLinesData = [];
-    for (let i = 0; i < orders.length; i++) {
-      const orderId = orders[i].id;
-      const orderLinesByOrder = await OrderLine.aggregate([
-        { $match: { orderId: ObjectId(orderId) } },
-        {
-          $lookup: {
-            from: "products",
-            localField: "productId",
-            foreignField: "_id",
-            as: "product",
+    if (Number.isInteger(pageNumber) && pageNumber > 0) {
+      const orders = await Order.find({ userId })
+        .select(["state", "createdAt"])
+        .sort({ _id: 1 })
+        .skip(pageNumber > 0 ? (pageNumber - 1) * 10 : 0)
+        .limit(10);
+      const orderLinesData = [];
+      for (let i = 0; i < orders.length; i++) {
+        const orderId = orders[i].id;
+        const orderLinesByOrder = await OrderLine.aggregate([
+          { $match: { orderId: ObjectId(orderId) } },
+          {
+            $lookup: {
+              from: "products",
+              localField: "productId",
+              foreignField: "_id",
+              as: "product",
+            },
           },
-        },
-        {
-          $unwind: "$product",
-        },
-        {
-          $project: {
-            quantity: 1,
-            "product.price": 1,
-            "product.thumbnail": 1,
-            "product.id": "$product._id",
-            orderId: 1,
-            _id: 0,
-            totalPerProduct: { $multiply: ["$product.price", "$quantity"] },
+          {
+            $unwind: "$product",
           },
-        },
-      ]);
-      orderLinesData.push(...orderLinesByOrder);
-    }
-    const response = orders.map((o) => {
-      const orderLines = orderLinesData.filter((l) => {
-        return l.orderId.toString() === o.id;
+          {
+            $project: {
+              quantity: 1,
+              "product.price": 1,
+              "product.thumbnail": 1,
+              "product.id": "$product._id",
+              orderId: 1,
+              _id: 0,
+              totalPerProduct: { $multiply: ["$product.price", "$quantity"] },
+            },
+          },
+        ]);
+        orderLinesData.push(...orderLinesByOrder);
+      }
+      const response = orders.map((o) => {
+        const orderLines = orderLinesData.filter((l) => {
+          return l.orderId.toString() === o.id;
+        });
+        return { ...o.toObject(), id: o._id, orderLines };
       });
-      return { ...o.toObject(), id: o._id, orderLines };
-    });
-    res.status(200).json(response);
+      res.status(200).json(response);
+    } else {
+      res.status(500).json({
+        message: "The pageNumber must be an integer greater than zero",
+      });
+    }
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

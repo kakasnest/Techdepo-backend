@@ -1,17 +1,29 @@
 import Review from "../models/review.js";
 
 export const getReviewsByUserId = async (req, res) => {
-  const { userId } = req;
+  const {
+    body: { pageNumber },
+    userId,
+  } = req;
 
   try {
-    const reviews = await Review.find({ userId })
-      .select(["-createdAt", "-updatedAt", "-__v", "-userId"])
-      .populate({
-        path: "productId",
-        model: "Product",
-        select: ["name", "thumbnail"],
+    if (Number.isInteger(pageNumber) && pageNumber > 0) {
+      const reviews = await Review.find({ userId })
+        .select(["-createdAt", "-updatedAt", "-__v", "-userId"])
+        .populate({
+          path: "productId",
+          model: "Product",
+          select: ["name", "thumbnail"],
+        })
+        .sort({ _id: 1 })
+        .skip(pageNumber > 0 ? (pageNumber - 1) * 10 : 0)
+        .limit(10);
+      res.status(200).json(reviews);
+    } else {
+      res.status(500).json({
+        message: "The pageNumber must be an integer greater than zero",
       });
-    res.status(200).json(reviews);
+    }
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -20,17 +32,27 @@ export const getReviewsByUserId = async (req, res) => {
 export const getReviewsByProductId = async (req, res) => {
   const {
     params: { productId },
+    body: { pageNumber },
   } = req;
 
   try {
-    const reviews = await Review.find({ productId })
-      .select(["text", "rating", "userId"])
-      .populate({
-        path: "userId",
-        model: "User",
-        select: ["fullNameHUN", "fullNameENG", "image"],
+    if (Number.isInteger(pageNumber) && pageNumber > 0) {
+      const reviews = await Review.find({ productId })
+        .select(["text", "rating", "userId"])
+        .populate({
+          path: "userId",
+          model: "User",
+          select: ["fullNameHUN", "fullNameENG", "image"],
+        })
+        .sort({ _id: 1 })
+        .skip(pageNumber > 0 ? (pageNumber - 1) * 10 : 0)
+        .limit(10);
+      res.status(200).json(reviews);
+    } else {
+      res.status(500).json({
+        message: "The pageNumber must be an integer greater than zero",
       });
-    res.status(200).json(reviews);
+    }
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
