@@ -1,22 +1,5 @@
 import Address from "../models/address.js";
 
-export const getAddressById = async (req, res) => {
-  const {
-    params: { id },
-  } = req;
-
-  try {
-    const address = await Address.findById(id).select([
-      "-createdAt",
-      "-updatedAt",
-      "-__v",
-    ]);
-    res.status(200).json(address);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
-
 export const getAddressesByUserId = async (req, res) => {
   const {
     body: { pageNumber },
@@ -26,7 +9,7 @@ export const getAddressesByUserId = async (req, res) => {
   try {
     if (Number.isInteger(pageNumber) && pageNumber > 0) {
       const addresses = await Address.find({ userId })
-        .select(["name"])
+        .select(["-createdAt", "-updatedAt", "-__v", "-userId"])
         .sort({ _id: 1 })
         .skip((pageNumber - 1) * 10)
         .limit(10);
