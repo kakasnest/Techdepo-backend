@@ -54,7 +54,7 @@ export const getOrdersByUserId = async (req, res) => {
       const orders = await Order.find({ userId })
         .select(["state", "createdAt"])
         .sort({ _id: 1 })
-        .skip(pageNumber > 0 ? (pageNumber - 1) * 10 : 0)
+        .skip((pageNumber - 1) * 10)
         .limit(10);
       const orderLinesData = [];
       for (let i = 0; i < orders.length; i++) {

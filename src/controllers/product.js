@@ -88,7 +88,7 @@ export const getProductsByCategory = async (req, res) => {
           "-description",
         ])
         .sort({ _id: 1 })
-        .skip(pageNumber > 0 ? (pageNumber - 1) * 10 : 0)
+        .skip((pageNumber - 1) * 10)
         .limit(10);
       const ratingsData = [];
       for (let i = 0; i < products.length; i++) {

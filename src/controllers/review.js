@@ -16,7 +16,7 @@ export const getReviewsByUserId = async (req, res) => {
           select: ["name", "thumbnail"],
         })
         .sort({ _id: 1 })
-        .skip(pageNumber > 0 ? (pageNumber - 1) * 10 : 0)
+        .skip((pageNumber - 1) * 10)
         .limit(10);
       res.status(200).json(reviews);
     } else {

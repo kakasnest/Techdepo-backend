@@ -28,7 +28,7 @@ export const getAddressesByUserId = async (req, res) => {
       const addresses = await Address.find({ userId })
         .select(["name"])
         .sort({ _id: 1 })
-        .skip(pageNumber > 0 ? (pageNumber - 1) * 10 : 0)
+        .skip((pageNumber - 1) * 10)
         .limit(10);
       res.status(200).json(addresses);
     } else {
