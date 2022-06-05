@@ -59,18 +59,43 @@ export const deleteCategoryById = async (req, res) => {
   }
 };
 
-// export const updateCategory = async (req, res) => {
-//   const {
-//     params: { id },
-//   } = req;
-//   const {
-//     body: { name },
-//   } = req;
+export const updateCategoryById = async (req, res) => {
+  const {
+    params: { id },
+    file,
+    body: { name },
+  } = req;
 
-//   try {
-//     await Category.findByIdAndUpdate(id, { name });
-//     res.status(200).json({ message: "Category updated" });
-//   } catch (err) {
-//     res.status(500).json({ message: err.message });
-//   }
-// };
+  try {
+    if (file) {
+      const { path } = file;
+      const defaultPath = join(sep, "api", path);
+      const image = defaultPath.replaceAll("\\", "/");
+      const { image: oldImage } = await Category.findByIdAndUpdate(id, {
+        image,
+        name,
+      });
+      if (oldImage !== "/api/images/default/placeholder.png") {
+        const filename = oldImage.split("/").pop();
+        const filePath = join(
+          dirname("."),
+          "images",
+          "category_images",
+          filename
+        );
+        unlink(filePath, () => {
+          res.status(200).json({ message: "Category updated" });
+        });
+      } else {
+        res.status(200).json({ message: "Category updated" });
+      }
+    } else if (name) {
+      await Category.findByIdAndUpdate(id, { name });
+      res.status(200).json({ message: "Category updated" });
+    } else {
+      res.status(500).json({ message: "No field for update was provided" });
+    }
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
