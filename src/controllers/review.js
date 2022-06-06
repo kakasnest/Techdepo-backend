@@ -1,4 +1,6 @@
+import Product from "../models/product.js";
 import Review from "../models/review.js";
+import { isValidObjectId } from "../utils/mongoIdValidation.js";
 
 export const getReviewsByUserId = async (req, res) => {
   const {
@@ -65,8 +67,17 @@ export const createReview = async (req, res) => {
   } = req;
 
   try {
-    await Review.create({ text, rating, userId, productId });
-    res.status(200).json({ message: "Review created" });
+    if (isValidObjectId(productId)) {
+      const isValidProductId = await Product.exists({ _id: productId });
+      if (isValidProductId) {
+        await Review.create({ text, rating, userId, productId });
+        res.status(200).json({ message: "Review created" });
+      } else {
+        res.status(500).json({ message: "Provided productId isn't valid" });
+      }
+    } else {
+      res.status(500).json({ message: "Provided productId isn't valid" });
+    }
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -85,18 +96,30 @@ export const deleteReviewById = async (req, res) => {
   }
 };
 
-// export const updateReview = async (req, res) => {
-//   const {
-//     params: { id },
-//   } = req;
-//   const {
-//     body: { text, rating },
-//   } = req;
+export const updateReviewById = async (req, res) => {
+  const {
+    params: { id },
+  } = req;
+  const {
+    body: { text, rating },
+  } = req;
+  const ratingCondition =
+    rating && Number.isInteger(rating) && !rating < 1 && !rating > 5;
 
-//   try {
-//     await Review.findByIdAndUpdate(id, { text, rating });
-//     res.status(200).json({ message: "Review updated" });
-//   } catch (err) {
-//     res.status(500).json({ message: err.message });
-//   }
-// };
+  try {
+    if (ratingCondition) {
+      await Review.findByIdAndUpdate(id, { text, rating });
+      res.status(200).json({ message: "Review updated" });
+    } else if (text) {
+      await Review.findByIdAndUpdate(id, { text });
+      res.status(200).json({ message: "Review updated" });
+    } else {
+      res.status(500).json({
+        message:
+          "No data provided for category update or the data isn't acceptable",
+      });
+    }
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};

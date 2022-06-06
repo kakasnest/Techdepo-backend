@@ -1,8 +1,11 @@
-import { join, sep } from "path";
+import { join, sep, dirname } from "path";
 import mongoose from "mongoose";
+import { unlink } from "fs";
 
 import Product from "../models/product.js";
 import Review from "../models/review.js";
+import Category from "../models/category.js";
+import { isValidObjectId } from "../utils/mongoIdValidation.js";
 
 const { ObjectId } = mongoose.Types;
 
@@ -157,9 +160,27 @@ export const createProduct = async (req, res) => {
     body: { name, description, stock, price, categories, isActive },
     files,
   } = req;
+  const categoriesCondition =
+    categories && Array.isArray(categories) && categories.length > 0;
 
   try {
-    const product = { name, description, stock, price, categories, isActive };
+    const validCategories = [];
+    if (categoriesCondition)
+      for (let i = 0; i < categories.length; i++) {
+        const categoryId = categories[i];
+        if (isValidObjectId(categoryId)) {
+          const isValidCategory = await Category.exists({ _id: categoryId });
+          if (isValidCategory) validCategories.push(categoryId);
+        }
+      }
+    const product = {
+      name,
+      description,
+      stock,
+      price,
+      categories: validCategories,
+      isActive,
+    };
     if (files.length > 0) {
       const images = files.map((f) => {
         const defaultPath = join(sep, "api", f.path);
@@ -180,38 +201,100 @@ export const createProduct = async (req, res) => {
   }
 };
 
-// export const deleteProduct = async (req, res) => {
-//   const {
-//     params: { id },
-//   } = req;
+export const updateProduct = async (req, res) => {
+  const {
+    body: { name, description, images, stock, price, categories, isActive },
+    params: { id },
+    files,
+  } = req;
+  const productBaseCondition = name || description || categories || isActive;
+  const stockCondition = stock && Number.isInteger(stock) && stock >= 0;
+  const priceCondition = price && !Number.isNaN(price) && price >= 0;
 
-//   try {
-//     await Product.findByIdAndDelete(id);
-//     res.status(200).json({ message: "Product deleted" });
-//   } catch (err) {
-//     res.status(500).json({ message: err.message });
-//   }
-// };
+  try {
+    if (priceCondition && stockCondition) {
+      await Product.findByIdAndUpdate(id, {
+        name,
+        description,
+        stock,
+        price,
+        images,
+        categories,
+        isActive,
+      });
+      res.status(200).json({ message: "Product updated" });
+    } else if (stockCondition) {
+      await Product.findByIdAndUpdate(id, {
+        name,
+        description,
+        stock,
+        images,
+        categories,
+        isActive,
+      });
+      res.status(200).json({ message: "Product updated" });
+    } else if (priceCondition) {
+      await Product.findByIdAndUpdate(id, {
+        name,
+        description,
+        price,
+        images,
+        categories,
+        isActive,
+      });
+      res.status(200).json({ message: "Product updated" });
+    } else if (productBaseCondition) {
+      await Product.findByIdAndUpdate(id, {
+        name,
+        description,
+        images,
+        categories,
+        isActive,
+      });
+      res.status(200).json({ message: "Product updated" });
+    } else {
+      res.status(500).json({ message: "No data provided for category update" });
+    }
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 
-// export const updateProduct = async (req, res) => {
-//   const {
-//     body: { name, description, images, stock, price, categories },
-//   } = req;
-//   const {
-//     params: { id },
-//   } = req;
+export const resetProductImagesById = async (req, res) => {
+  const {
+    params: { id },
+  } = req;
 
-//   try {
-//     await Product.findByIdAndUpdate(id, {
-//       name,
-//       description,
-//       images,
-//       stock,
-//       price,
-//       categories,
-//     });
-//     res.status(200).json({ message: "Product updated" });
-//   } catch (err) {
-//     res.status(500).json({ message: err.message });
-//   }
-// };
+  try {
+    const { images } = await Product.findById(id);
+    if (
+      images.includes("/api/images/default/placeholder.png") &&
+      images.length === 1
+    ) {
+      res
+        .status(500)
+        .json({ message: "Product has been already set with default image" });
+    } else {
+      for (let i = 0; i < images.length; i++) {
+        const filename = images[i].split("/").pop();
+        const filePath = join(
+          dirname("."),
+          "images",
+          "product_images",
+          filename
+        );
+        unlink(filePath, (error) => {
+          if (error) console.log(error);
+        });
+      }
+      await Product.findByIdAndUpdate(id, {
+        images: ["/api/images/default/placeholder.png"],
+      });
+      res
+        .status(200)
+        .json({ message: "Category has been reset with default image" });
+    }
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};

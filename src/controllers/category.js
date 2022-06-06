@@ -83,7 +83,8 @@ export const updateCategoryById = async (req, res) => {
           "category_images",
           filename
         );
-        unlink(filePath, () => {
+        unlink(filePath, (error) => {
+          if (error) console.log(error);
           res.status(200).json({ message: "Category updated" });
         });
       } else {
@@ -93,7 +94,43 @@ export const updateCategoryById = async (req, res) => {
       await Category.findByIdAndUpdate(id, { name });
       res.status(200).json({ message: "Category updated" });
     } else {
-      res.status(500).json({ message: "No field for update was provided" });
+      res.status(500).json({
+        message: "No data provided for category update",
+      });
+    }
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+export const resetCategoryImageById = async (req, res) => {
+  const {
+    params: { id },
+  } = req;
+
+  try {
+    const { image } = await Category.findById(id);
+    if (image === "/api/images/default/placeholder.png") {
+      res
+        .status(500)
+        .json({ message: "Category has been already set with default image" });
+    } else {
+      const filename = image.split("/").pop();
+      const filePath = join(
+        dirname("."),
+        "images",
+        "category_images",
+        filename
+      );
+      unlink(filePath, async (error) => {
+        if (error) console.log(error);
+        await Category.findByIdAndUpdate(id, {
+          image: "/api/images/default/placeholder.png",
+        });
+        res
+          .status(200)
+          .json({ message: "Category has been reset with default image" });
+      });
     }
   } catch (err) {
     res.status(500).json({ message: err.message });

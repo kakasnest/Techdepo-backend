@@ -5,6 +5,7 @@ import {
   deleteReviewById,
   getReviewsByProductId,
   getReviewsByUserId,
+  updateReviewById,
 } from "../controllers/review.js";
 import auth from "../middlewares/auth.js";
 
@@ -15,5 +16,6 @@ router.route("/").get(getReviewsByUserId);
 router.route("/:productId").get(getReviewsByProductId);
 router.route("/").post(createReview);
 router.route("/:id").delete(deleteReviewById);
+router.route("/:id").put(updateReviewById);
 
 export default router;

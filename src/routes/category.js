@@ -4,6 +4,7 @@ import {
   createCategory,
   deleteCategoryById,
   getCategories,
+  resetCategoryImageById,
   updateCategoryById,
 } from "../controllers/category.js";
 import auth from "../middlewares/auth.js";
@@ -17,5 +18,6 @@ router.route("/:id").delete(deleteCategoryById);
 router
   .route("/:id")
   .put(auth, upload.single("category_images"), updateCategoryById);
+router.route("/:id").patch(resetCategoryImageById);
 
 export default router;

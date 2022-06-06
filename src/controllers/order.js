@@ -2,6 +2,8 @@ import mongoose from "mongoose";
 
 import Order from "../models/order.js";
 import OrderLine from "../models/orderLine.js";
+import Product from "../models/product.js";
+import { isValidObjectId } from "../utils/mongoIdValidation.js";
 
 const { ObjectId } = mongoose.Types;
 
@@ -108,18 +110,30 @@ export const createOrder = async (req, res) => {
     body: { orderLines },
     userId,
   } = req;
+  const orderLinesCondition =
+    orderLines && Array.isArray(orderLines) && orderLines.length > 0;
 
   try {
     const { id: orderId } = await Order.create({ userId });
     try {
-      if (orderLines && Array.isArray(orderLines) && orderLines.length > 0) {
+      if (orderLinesCondition) {
         const orderLinesWithOrderId = [];
         for (let i = 0; i < orderLines.length; i++) {
           const { productId, quantity } = orderLines[i];
-          orderLinesWithOrderId.push({ productId, quantity, orderId });
+          if (isValidObjectId(productId)) {
+            const isValidProductId = await Product.exists({ _id: productId });
+            if (isValidProductId)
+              orderLinesWithOrderId.push({ productId, quantity, orderId });
+          }
         }
-        await OrderLine.insertMany(orderLinesWithOrderId);
-        res.status(200).json({ message: "Order created" });
+        if (orderLinesWithOrderId.length > 0) {
+          await OrderLine.insertMany(orderLinesWithOrderId);
+          res.status(200).json({ message: "Order created" });
+        } else {
+          res.status(500).json({
+            message: "OrderLines must contain at least one valid productId",
+          });
+        }
       } else {
         res.status(500).json({
           message:
@@ -134,17 +148,3 @@ export const createOrder = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
-
-// export const updateOrder = async (req, res) => {
-//   const {
-//     params: { id },
-//   } = req;
-//   const { body: orderLines, state } = req;
-
-//   try {
-//     await Order.findByIdAndUpdate(id, { orderLines, state });
-//     res.status(200).json({ message: "Order updated" });
-//   } catch (err) {
-//     res.status(500).json({ message: err.message });
-//   }
-// };

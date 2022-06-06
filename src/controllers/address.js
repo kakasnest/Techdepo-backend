@@ -67,9 +67,11 @@ export const updateAddressById = async (req, res) => {
   const {
     body: { name, country, city, street, houseNumber, postcode, phone },
   } = req;
+  const addressCondition =
+    name || country || city || street || houseNumber || postcode || phone;
 
   try {
-    if (name || country || city || street || houseNumber || postcode || phone) {
+    if (addressCondition) {
       await Address.findByIdAndUpdate(id, {
         name,
         country,
