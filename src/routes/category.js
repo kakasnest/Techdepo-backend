@@ -13,9 +13,9 @@ const router = Router();
 
 router.route("/").get(getCategories);
 router.route("/").post(auth, upload.single("category_images"), createCategory);
-router.route("/by_id/:id").delete(deleteCategoryById);
+router.route("/:id").delete(deleteCategoryById);
 router
-  .route("/by_id/:id")
+  .route("/:id")
   .put(auth, upload.single("category_images"), updateCategoryById);
 
 export default router;

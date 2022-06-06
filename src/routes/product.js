@@ -10,8 +10,8 @@ import { upload } from "../middlewares/storage.js";
 
 const router = Router();
 
-router.route("/by_id/:id").get(getProductById);
-router.route("/by_category").get(getProductsByCategory);
+router.route("/:id").get(getProductById);
+router.route("/").get(getProductsByCategory);
 router.route("/").post(auth, upload.array("product_images"), createProduct);
 
 export default router;

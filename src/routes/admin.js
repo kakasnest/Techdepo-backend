@@ -6,7 +6,7 @@ import auth from "../middlewares/auth.js";
 const router = Router();
 router.use(auth);
 
-router.route("/by_id/:id").get(getUserById);
+router.route("/:id").get(getUserById);
 router.route("/").get(getUsers);
 
 export default router;

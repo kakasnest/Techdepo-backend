@@ -60,26 +60,30 @@ export const deleteAddressById = async (req, res) => {
   }
 };
 
-// export const updateAddress = async (req, res) => {
-//   const {
-//     params: { id },
-//   } = req;
-//   const {
-//     body: { name, country, city, street, houseNumber, postcode, phone },
-//   } = req;
+export const updateAddressById = async (req, res) => {
+  const {
+    params: { id },
+  } = req;
+  const {
+    body: { name, country, city, street, houseNumber, postcode, phone },
+  } = req;
 
-//   try {
-//     await Address.findByIdAndUpdate(id, {
-//       name,
-//       country,
-//       city,
-//       street,
-//       houseNumber,
-//       postcode,
-//       phone,
-//     });
-//     res.status(200).json({ message: "Address updated" });
-//   } catch (err) {
-//     res.status(500).json({ message: err.message });
-//   }
-// };
+  try {
+    if (name || country || city || street || houseNumber || postcode || phone) {
+      await Address.findByIdAndUpdate(id, {
+        name,
+        country,
+        city,
+        street,
+        houseNumber,
+        postcode,
+        phone,
+      });
+      res.status(200).json({ message: "Address updated" });
+    } else {
+      res.status(500).json({ message: "No data provided for address update" });
+    }
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
