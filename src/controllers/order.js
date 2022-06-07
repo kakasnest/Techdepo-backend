@@ -120,10 +120,29 @@ export const createOrder = async (req, res) => {
         const orderLinesWithOrderId = [];
         for (let i = 0; i < orderLines.length; i++) {
           const { productId, quantity } = orderLines[i];
-          if (isValidObjectId(productId)) {
+          const quantityCondition =
+            quantity && Number.isInteger(quantity) && quantity > 0;
+          if (isValidObjectId(productId) && quantityCondition) {
             const isValidProductId = await Product.exists({ _id: productId });
-            if (isValidProductId)
+            if (
+              isValidProductId &&
+              !orderLinesWithOrderId.some((o) => o.productId === productId)
+            ) {
               orderLinesWithOrderId.push({ productId, quantity, orderId });
+            } else if (
+              isValidProductId &&
+              orderLinesWithOrderId.some((o) => o.productId === productId)
+            ) {
+              const index = orderLinesWithOrderId.findIndex(
+                (o) => o.productId === productId
+              );
+              const removed = orderLinesWithOrderId.slice(index, 1)[0];
+              const newLine = {
+                ...removed,
+                quantity: quantity + removed.quantity,
+              };
+              orderLinesWithOrderId.push(newLine);
+            }
           }
         }
         if (orderLinesWithOrderId.length > 0) {
@@ -131,7 +150,7 @@ export const createOrder = async (req, res) => {
           res.status(200).json({ message: "Order created" });
         } else {
           res.status(500).json({
-            message: "OrderLines must contain at least one valid productId",
+            message: "OrderLines must contain valid productIds and quantities",
           });
         }
       } else {

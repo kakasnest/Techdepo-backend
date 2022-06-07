@@ -170,7 +170,8 @@ export const createProduct = async (req, res) => {
         const categoryId = categories[i];
         if (isValidObjectId(categoryId)) {
           const isValidCategory = await Category.exists({ _id: categoryId });
-          if (isValidCategory) validCategories.push(categoryId);
+          if (isValidCategory && !validCategories.includes(categoryId))
+            validCategories.push(categoryId);
         }
       }
     const product = {
@@ -201,7 +202,8 @@ export const createProduct = async (req, res) => {
   }
 };
 
-export const updateProduct = async (req, res) => {
+export const updateProductById = async (req, res) => {
+  //TODO: MAGIC NEEDED
   const {
     body: { name, description, images, stock, price, categories, isActive },
     params: { id },
@@ -212,44 +214,44 @@ export const updateProduct = async (req, res) => {
   const priceCondition = price && !Number.isNaN(price) && price >= 0;
 
   try {
+    const validCategories = [];
+    if (categoriesCondition)
+      for (let i = 0; i < categories.length; i++) {
+        const categoryId = categories[i];
+        if (isValidObjectId(categoryId)) {
+          const isValidCategory = await Category.exists({ _id: categoryId });
+          if (isValidCategory) validCategories.push(categoryId);
+        }
+      }
+    const product = {
+      name,
+      description,
+      images,
+      categories: validCategories,
+      isActive,
+    };
     if (priceCondition && stockCondition) {
       await Product.findByIdAndUpdate(id, {
-        name,
-        description,
+        ...product,
         stock,
         price,
-        images,
-        categories,
-        isActive,
       });
       res.status(200).json({ message: "Product updated" });
     } else if (stockCondition) {
       await Product.findByIdAndUpdate(id, {
-        name,
-        description,
-        stock,
-        images,
-        categories,
-        isActive,
+        ...product,
+        stockCondition,
       });
       res.status(200).json({ message: "Product updated" });
     } else if (priceCondition) {
       await Product.findByIdAndUpdate(id, {
-        name,
-        description,
+        ...product,
         price,
-        images,
-        categories,
-        isActive,
       });
       res.status(200).json({ message: "Product updated" });
     } else if (productBaseCondition) {
       await Product.findByIdAndUpdate(id, {
-        name,
-        description,
-        images,
-        categories,
-        isActive,
+        ...product,
       });
       res.status(200).json({ message: "Product updated" });
     } else {
@@ -289,6 +291,7 @@ export const resetProductImagesById = async (req, res) => {
       }
       await Product.findByIdAndUpdate(id, {
         images: ["/api/images/default/placeholder.png"],
+        thumbnail: "/api/images/default/placeholder.png",
       });
       res
         .status(200)
