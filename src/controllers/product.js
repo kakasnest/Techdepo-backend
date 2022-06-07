@@ -237,6 +237,26 @@ export const updateProductById = async (req, res) => {
           const image = defaultPath.replaceAll("\\", "/");
           return image;
         });
+        const { images } = await Product.findById(id);
+        if (
+          !(
+            images.length === 1 &&
+            images.includes("/api/images/default/placeholder.png")
+          )
+        ) {
+          for (let i = 0; i < images.length; i++) {
+            const filename = images[i].split("/").pop();
+            const filePath = join(
+              dirname("."),
+              "images",
+              "product_images",
+              filename
+            );
+            unlink(filePath, (error) => {
+              if (error) console.log(error);
+            });
+          }
+        }
         product.images = newImages;
         product.thumbnail = newImages[0];
       }
