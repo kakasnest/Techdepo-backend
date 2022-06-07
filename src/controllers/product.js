@@ -188,14 +188,10 @@ export const createProduct = async (req, res) => {
         const image = defaultPath.replaceAll("\\", "/");
         return image;
       });
-      await Product.create({
-        ...product,
-        images,
-        thumbnail: images[0],
-      });
-    } else {
-      await Product.create(product);
+      product.images = images;
+      product.thumbnail = images[0];
     }
+    await Product.create(product);
     res.status(201).json({ message: "Product created" });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -203,15 +199,18 @@ export const createProduct = async (req, res) => {
 };
 
 export const updateProductById = async (req, res) => {
-  //TODO: MAGIC NEEDED
   const {
-    body: { name, description, images, stock, price, categories, isActive },
-    params: { id },
+    body: { name, description, stock, price, categories, isActive, images },
     files,
+    params: { id },
   } = req;
   const productBaseCondition = name || description || categories || isActive;
-  const stockCondition = stock && Number.isInteger(stock) && stock >= 0;
-  const priceCondition = price && !Number.isNaN(price) && price >= 0;
+  const stockCondition =
+    stock && Number.isInteger(parseInt(stock)) && parseInt(stock) >= 0;
+  const priceCondition =
+    price && !Number.isNaN(parseInt(price)) && parseInt(price) >= 0;
+  const categoriesCondition =
+    categories && Array.isArray(categories) && categories.length > 0;
 
   try {
     const validCategories = [];
@@ -226,33 +225,22 @@ export const updateProductById = async (req, res) => {
     const product = {
       name,
       description,
-      images,
       categories: validCategories,
       isActive,
     };
-    if (priceCondition && stockCondition) {
-      await Product.findByIdAndUpdate(id, {
-        ...product,
-        stock,
-        price,
-      });
-      res.status(200).json({ message: "Product updated" });
-    } else if (stockCondition) {
-      await Product.findByIdAndUpdate(id, {
-        ...product,
-        stockCondition,
-      });
-      res.status(200).json({ message: "Product updated" });
-    } else if (priceCondition) {
-      await Product.findByIdAndUpdate(id, {
-        ...product,
-        price,
-      });
-      res.status(200).json({ message: "Product updated" });
-    } else if (productBaseCondition) {
-      await Product.findByIdAndUpdate(id, {
-        ...product,
-      });
+    if (priceCondition) product.price = price;
+    if (stockCondition) product.stock = stock;
+    if (productBaseCondition) {
+      if (files.length > 0) {
+        const newImages = files.map((f) => {
+          const defaultPath = join(sep, "api", f.path);
+          const image = defaultPath.replaceAll("\\", "/");
+          return image;
+        });
+        product.images = newImages;
+        product.thumbnail = newImages[0];
+      }
+      await Product.findByIdAndUpdate(id, product);
       res.status(200).json({ message: "Product updated" });
     } else {
       res.status(500).json({ message: "No data provided for category update" });
@@ -270,8 +258,8 @@ export const resetProductImagesById = async (req, res) => {
   try {
     const { images } = await Product.findById(id);
     if (
-      images.includes("/api/images/default/placeholder.png") &&
-      images.length === 1
+      images.length === 1 &&
+      images.includes("/api/images/default/placeholder.png")
     ) {
       res
         .status(500)

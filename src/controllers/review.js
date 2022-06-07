@@ -99,24 +99,21 @@ export const deleteReviewById = async (req, res) => {
 export const updateReviewById = async (req, res) => {
   const {
     params: { id },
-  } = req;
-  const {
     body: { text, rating },
   } = req;
   const ratingCondition =
-    rating && Number.isInteger(rating) && !rating < 1 && !rating > 5;
+    rating && Number.isInteger(rating) && !(rating < 1) && !(rating > 5);
 
   try {
-    if (ratingCondition) {
-      await Review.findByIdAndUpdate(id, { text, rating });
-      res.status(200).json({ message: "Review updated" });
-    } else if (text) {
-      await Review.findByIdAndUpdate(id, { text });
+    const review = { text };
+    if (ratingCondition) review.rating = rating;
+    if (text || text === "") {
+      await Review.findByIdAndUpdate(id, review);
       res.status(200).json({ message: "Review updated" });
     } else {
       res.status(500).json({
         message:
-          "No data provided for category update or the data isn't acceptable",
+          "No data provided for review update or the data isn't acceptable",
       });
     }
   } catch (err) {

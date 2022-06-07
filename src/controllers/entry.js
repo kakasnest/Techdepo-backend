@@ -26,7 +26,7 @@ export const login = async (req, res) => {
         });
         const isSecure = env === "PRODUCTION";
         res.cookie("auth", token, { httpOnly: true, secure: isSecure });
-        res.status(202).json({ message: "Login successful" });
+        res.status(200).json({ message: "Login successful" });
       }
     }
   } catch (err) {
@@ -57,7 +57,9 @@ export const register = async (req, res) => {
 export const logout = async (req, res) => {
   try {
     res.clearCookie("auth");
-    res.json({ message: "Auth cookie has been cleared from the browser" });
+    res
+      .status(200)
+      .json({ message: "Auth cookie has been cleared from the browser" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
