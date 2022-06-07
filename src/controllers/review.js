@@ -76,7 +76,9 @@ export const createReview = async (req, res) => {
         res.status(500).json({ message: "Provided productId isn't valid" });
       }
     } else {
-      res.status(500).json({ message: "Provided productId isn't valid" });
+      res
+        .status(500)
+        .json({ message: "Provided productId isn't a valid ObjectId" });
     }
   } catch (err) {
     res.status(500).json({ message: err.message });

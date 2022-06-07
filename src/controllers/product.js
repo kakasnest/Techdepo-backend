@@ -200,7 +200,7 @@ export const createProduct = async (req, res) => {
 
 export const updateProductById = async (req, res) => {
   const {
-    body: { name, description, stock, price, categories, isActive, images },
+    body: { name, description, stock, price, categories, isActive },
     files,
     params: { id },
   } = req;
