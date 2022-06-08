@@ -59,7 +59,8 @@ export const getReviewsByProductId = async (req, res) => {
       res.status(200).json(reviews);
     } else {
       res.status(500).json({
-        message: "The pageNumber must be an integer greater than zero",
+        message:
+          "The page and limit parameters must be integer convertable strings greater than zero",
       });
     }
   } catch (err) {
