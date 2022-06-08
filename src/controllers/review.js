@@ -3,13 +3,15 @@ import Review from "../models/review.js";
 import { isValidObjectId } from "../utils/mongoIdValidation.js";
 
 export const getReviewsByUserId = async (req, res) => {
-  const {
-    body: { pageNumber },
-    userId,
-  } = req;
+  const { query, userId } = req;
+  const page = parseInt(query.page);
+  const limit = parseInt(query.limit);
+  const pageCondition = page && Number.isInteger(page) && page > 0;
+  const limitCondition =
+    limit && Number.isInteger(limit) && limit > 0 && limit <= 100;
 
   try {
-    if (Number.isInteger(pageNumber) && pageNumber > 0) {
+    if (pageCondition && limitCondition) {
       const reviews = await Review.find({ userId })
         .select(["-createdAt", "-updatedAt", "-__v", "-userId"])
         .populate({
@@ -18,7 +20,7 @@ export const getReviewsByUserId = async (req, res) => {
           select: ["name", "thumbnail"],
         })
         .sort({ _id: 1 })
-        .skip((pageNumber - 1) * 10)
+        .skip((page - 1) * limit)
         .limit(10);
       res.status(200).json(reviews);
     } else {
@@ -33,12 +35,17 @@ export const getReviewsByUserId = async (req, res) => {
 
 export const getReviewsByProductId = async (req, res) => {
   const {
-    params: { productId },
-    body: { pageNumber },
+    query,
+    body: { productId },
   } = req;
+  const page = parseInt(query.page);
+  const limit = parseInt(query.limit);
+  const pageCondition = page && Number.isInteger(page) && page > 0;
+  const limitCondition =
+    limit && Number.isInteger(limit) && limit > 0 && limit <= 100;
 
   try {
-    if (Number.isInteger(pageNumber) && pageNumber > 0) {
+    if (pageCondition && limitCondition) {
       const reviews = await Review.find({ productId })
         .select(["text", "rating", "userId"])
         .populate({
@@ -47,8 +54,8 @@ export const getReviewsByProductId = async (req, res) => {
           select: ["fullNameHUN", "fullNameENG", "image"],
         })
         .sort({ _id: 1 })
-        .skip(pageNumber > 0 ? (pageNumber - 1) * 10 : 0)
-        .limit(10);
+        .skip((page - 1) * limit)
+        .limit(limit);
       res.status(200).json(reviews);
     } else {
       res.status(500).json({

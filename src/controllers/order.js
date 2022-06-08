@@ -46,18 +46,20 @@ export const getOrderById = async (req, res) => {
 };
 
 export const getOrdersByUserId = async (req, res) => {
-  const {
-    body: { pageNumber },
-    userId,
-  } = req;
+  const { userId, query } = req;
+  const page = parseInt(query.page);
+  const limit = parseInt(query.limit);
+  const pageCondition = page && Number.isInteger(page) && page > 0;
+  const limitCondition =
+    limit && Number.isInteger(limit) && limit > 0 && limit <= 100;
 
   try {
-    if (Number.isInteger(pageNumber) && pageNumber > 0) {
+    if (pageCondition && limitCondition) {
       const orders = await Order.find({ userId })
         .select(["state", "createdAt"])
         .sort({ _id: 1 })
-        .skip((pageNumber - 1) * 10)
-        .limit(10);
+        .skip((page - 1) * limit)
+        .limit(limit);
       const orderLinesData = [];
       for (let i = 0; i < orders.length; i++) {
         const orderId = orders[i].id;
