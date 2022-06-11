@@ -5,7 +5,7 @@ import { unlink } from "fs";
 import Product from "../models/product.js";
 import Review from "../models/review.js";
 import Category from "../models/category.js";
-import { isValidObjectId } from "../utils/mongoIdValidation.js";
+import { productRating } from "../utils/controllerUtils/product.js";
 
 const { ObjectId } = mongoose.Types;
 
@@ -22,50 +22,12 @@ export const getProductById = async (req, res) => {
         model: "Category",
         select: "name",
       });
-    const ratingData = await Review.aggregate([
-      {
-        $facet: {
-          productRating: [
-            { $match: { productId: ObjectId(id) } },
-            {
-              $group: { _id: "$productId", rating: { $avg: "$rating" } },
-            },
-          ],
-          productRatingCount: [
-            { $match: { productId: ObjectId(id) } },
-            {
-              $count: "ratingCount",
-            },
-          ],
-        },
-      },
-      {
-        $unwind: "$productRating",
-      },
-      {
-        $unwind: "$productRatingCount",
-      },
-      {
-        $addFields: {
-          merged: {
-            $mergeObjects: ["$productRating", "$productRatingCount"],
-          },
-        },
-      },
-      {
-        $project: {
-          rating: "$merged.rating",
-          ratingCount: "$merged.ratingCount",
-          id: "$merged._id",
-        },
-      },
-    ]);
-
-    const rating = ratingData[0];
-    const categories = product.categories.map((c) => {
-      return { ...c.toObject(), id: c._id };
-    });
-    res.status(200).json({ ...product.toObject(), ...rating, categories });
+    const ratingData = await Review.aggregate(productRating(id));
+    // const rating = ratingData[0];
+    // const categories = product.categories.map((c) => {
+    //   return { ...c.toObject(), id: c._id };
+    // });
+    res.status(200).json({ ...product.toObject(), ...ratingData });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

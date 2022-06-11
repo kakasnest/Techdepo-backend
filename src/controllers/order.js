@@ -3,7 +3,6 @@ import mongoose from "mongoose";
 import Order from "../models/order.js";
 import OrderLine from "../models/orderLine.js";
 import Product from "../models/product.js";
-import { isValidObjectId } from "../utils/mongoIdValidation.js";
 
 const { ObjectId } = mongoose.Types;
 
@@ -108,7 +107,7 @@ export const getOrdersByUserId = async (req, res) => {
   }
 };
 
-export const createOrder = async (req, res) => {
+export const createOrder = async (req, res, next) => {
   const {
     body: { orderLines },
     userId,
@@ -120,34 +119,69 @@ export const createOrder = async (req, res) => {
     const { id: orderId } = await Order.create({ userId });
     try {
       if (orderLinesCondition) {
-        const orderLinesWithOrderId = [];
-        for (let i = 0; i < orderLines.length; i++) {
-          const { productId, quantity } = orderLines[i];
-          const quantityCondition =
-            quantity && Number.isInteger(quantity) && quantity > 0;
-          if (isValidObjectId(productId) && quantityCondition) {
-            const isValidProductId = await Product.exists({ _id: productId });
-            if (
-              isValidProductId &&
-              !orderLinesWithOrderId.some((o) => o.productId === productId)
-            ) {
-              orderLinesWithOrderId.push({ productId, quantity, orderId });
-            } else if (
-              isValidProductId &&
-              orderLinesWithOrderId.some((o) => o.productId === productId)
-            ) {
-              const index = orderLinesWithOrderId.findIndex(
-                (o) => o.productId === productId
-              );
-              const removed = orderLinesWithOrderId.slice(index, 1)[0];
-              const newLine = {
-                ...removed,
-                quantity: quantity + removed.quantity,
-              };
-              orderLinesWithOrderId.push(newLine);
+        const orderLinesWithOrderId = orderLines.map(async (orderLine) => {
+          try {
+            const { productId, quantity } = orderLine;
+            throw new Error("asd");
+            const quantityCondition =
+              quantity && Number.isInteger(quantity) && quantity > 0;
+            if (isValidObjectId(productId) && quantityCondition) {
+              const isValidProductId = await Product.exists({ _id: productId });
+              if (
+                isValidProductId &&
+                !orderLinesWithOrderId.some((o) => o.productId === productId)
+              ) {
+                return { productId, quantity, orderId };
+              }
+              if (
+                isValidProductId &&
+                orderLinesWithOrderId.some((o) => o.productId === productId)
+              ) {
+                const index = orderLinesWithOrderId.findIndex(
+                  (o) => o.productId === productId
+                );
+                const removed = orderLinesWithOrderId.slice(index, 1)[0];
+                const newLine = {
+                  ...removed,
+                  quantity: quantity + removed.quantity,
+                };
+                return newLine;
+              }
+              return;
             }
+          } catch (error) {
+            console.log(error);
+            return next(error);
           }
-        }
+        });
+        // for (let i = 0; i < orderLines.length; i++) {
+        //   const { productId, quantity } = orderLines[i];
+        //   const quantityCondition =
+        //     quantity && Number.isInteger(quantity) && quantity > 0;
+        //   if (isValidObjectId(productId) && quantityCondition) {
+        //     const isValidProductId = await Product.exists({ _id: productId });
+        //     if (
+        //       isValidProductId &&
+        //       !orderLinesWithOrderId.some((o) => o.productId === productId)
+        //     ) {
+        //       orderLinesWithOrderId.push({ productId, quantity, orderId });
+        //     } else if (
+        //       isValidProductId &&
+        //       orderLinesWithOrderId.some((o) => o.productId === productId)
+        //     ) {
+        //       const index = orderLinesWithOrderId.findIndex(
+        //         (o) => o.productId === productId
+        //       );
+        //       const removed = orderLinesWithOrderId.slice(index, 1)[0];
+        //       const newLine = {
+        //         ...removed,
+        //         quantity: quantity + removed.quantity,
+        //       };
+        //       orderLinesWithOrderId.push(newLine);
+        //     }
+        //   }
+        // }
+
         if (orderLinesWithOrderId.length > 0) {
           await OrderLine.insertMany(orderLinesWithOrderId);
           res.status(201).json({ message: "Order created" });
@@ -164,9 +198,9 @@ export const createOrder = async (req, res) => {
       }
     } catch (err) {
       await Order.findByIdAndDelete(orderId);
-      res.status(500).json({ message: err.message });
+      next(err.message);
     }
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    next(err.message);
   }
 };
