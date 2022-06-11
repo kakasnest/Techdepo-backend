@@ -8,11 +8,7 @@ import Review from "../../models/review.js";
 export const reviewExists = async (id) => {
   const isValidId = ObjectId.isValid(id);
   try {
-    const reviewExists = isValidId
-      ? null !== (await Review.exists({ _id: id }))
-      : false;
-
-    return reviewExists;
+    return isValidId ? null !== (await Review.exists({ _id: id })) : false;
   } catch (err) {
     console.log(err.message);
   }

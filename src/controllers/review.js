@@ -1,5 +1,6 @@
 import Review from "../models/review.js";
 import { hasPaginationParams } from "../utils/controllerUtils/general.js";
+import { productExists } from "../utils/controllerUtils/product.js";
 import {
   hasUpdateProps,
   reviewExists,
@@ -20,7 +21,7 @@ export const getReviewsByUserId = async (req, res) => {
           model: "Product",
           select: ["name", "thumbnail"],
         })
-        .sort({ createdAt: 1 })
+        .sort({ createdAt: -1 })
         .skip((page - 1) * limit)
         .limit(limit);
       res.status(200).json(reviews);
@@ -41,22 +42,26 @@ export const getReviewsByProductId = async (req, res) => {
   } = req;
 
   try {
-    if (hasPaginationParams(page, limit)) {
-      const reviews = await Review.find({ productId })
-        .select(["-__v", "-productId"])
-        .populate({
-          path: "userId",
-          model: "User",
-          select: ["fullNameHUN", "fullNameENG", "image"],
-        })
-        .sort({ createdAt: 1 })
-        .skip((page - 1) * limit)
-        .limit(limit);
-      res.status(200).json(reviews);
+    if (await productExists(productId)) {
+      if (hasPaginationParams(page, limit)) {
+        const reviews = await Review.find({ productId })
+          .select(["-__v", "-productId"])
+          .populate({
+            path: "userId",
+            model: "User",
+            select: ["fullNameHUN", "fullNameENG", "image"],
+          })
+          .sort({ createdAt: -1 })
+          .skip((page - 1) * limit)
+          .limit(limit);
+        res.status(200).json(reviews);
+      } else {
+        throw new Error(
+          "The page and limit parameters must be integers greater than zero"
+        );
+      }
     } else {
-      throw new Error(
-        "The page and limit parameters must be integers greater than zero"
-      );
+      throw new Error("There isn't a product with this id");
     }
   } catch (err) {
     res.status(500).json({ message: err.message });

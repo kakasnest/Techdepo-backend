@@ -8,11 +8,7 @@ import Product from "../../models/product.js";
 export const productExists = async (id) => {
   const isValidId = ObjectId.isValid(id);
   try {
-    const reviewExists = isValidId
-      ? null !== (await Product.exists({ _id: id }))
-      : false;
-
-    return reviewExists;
+    return isValidId ? null !== (await Product.exists({ _id: id })) : false;
   } catch (err) {
     console.log(err.message);
   }

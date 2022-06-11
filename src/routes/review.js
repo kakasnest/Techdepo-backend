@@ -13,7 +13,7 @@ const router = Router();
 router.use(auth);
 
 router.route("/").get(getReviewsByUserId);
-router.route("/:productId").get(getReviewsByProductId);
+router.route("/by_productId").get(getReviewsByProductId);
 router.route("/").post(createReview);
 router.route("/:id").delete(deleteReviewById);
 router.route("/:id").put(updateReviewById);
