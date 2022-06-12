@@ -59,7 +59,7 @@ export const deleteAddressById = async (req, res) => {
   } = req;
 
   try {
-    if (addressExists(id)) {
+    if (await addressExists(id)) {
       await Address.findByIdAndDelete(id);
       res.status(200).json({ message: "Address deleted" });
     } else {
@@ -86,7 +86,7 @@ export const updateAddressById = async (req, res) => {
       postcode,
       phone,
     };
-    if (hasUpdateProps(address)) {
+    if ((await addressExists(id)) && hasUpdateProps(address)) {
       await Address.findByIdAndUpdate(id, address);
       res.status(200).json({ message: "Address updated" });
     } else {
