@@ -14,6 +14,6 @@ export const reviewExists = async (id) => {
   }
 };
 
-export const hasUpdateProps = ({ text, rating }) => {
-  return typeof text !== "undefined" && rating !== "undefined";
+export const hasUpdateProps = (rating) => {
+  return typeof rating !== "undefined";
 };

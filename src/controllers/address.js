@@ -1,26 +1,28 @@
 import Address from "../models/address.js";
+import {
+  addressExists,
+  hasUpdateProps,
+} from "../utils/controllerUtils/address.js";
+import { hasPaginationParams } from "../utils/controllerUtils/general.js";
 
 export const getAddressesByUserId = async (req, res) => {
-  const { userId, query } = req;
-  const page = parseInt(query.page);
-  const limit = parseInt(query.limit);
-  const pageCondition = page && Number.isInteger(page) && page > 0;
-  const limitCondition =
-    limit && Number.isInteger(limit) && limit > 0 && limit <= 100;
+  const {
+    userId,
+    query: { page, limit },
+  } = req;
 
   try {
-    if (pageCondition && limitCondition) {
+    if (hasPaginationParams({ page, limit })) {
       const addresses = await Address.find({ userId })
         .select(["-createdAt", "-updatedAt", "-__v", "-userId"])
-        .sort({ _id: 1 })
+        .sort({ name: 1 })
         .skip((page - 1) * limit)
         .limit(limit);
       res.status(200).json(addresses);
     } else {
-      res.status(500).json({
-        message:
-          "The page and limit parameters must be integer convertable strings greater than zero",
-      });
+      throw new Error(
+        "The page and limit parameters must be integers greater than zero"
+      );
     }
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -34,7 +36,7 @@ export const createAddress = async (req, res) => {
   } = req;
 
   try {
-    await Address.create({
+    const address = {
       name,
       country,
       city,
@@ -43,7 +45,8 @@ export const createAddress = async (req, res) => {
       houseNumber,
       phone,
       userId,
-    });
+    };
+    await Address.create(address);
     res.status(200).json({ message: "Address created" });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -56,8 +59,12 @@ export const deleteAddressById = async (req, res) => {
   } = req;
 
   try {
-    await Address.findByIdAndDelete(id);
-    res.status(200).json({ message: "Address deleted" });
+    if (addressExists(id)) {
+      await Address.findByIdAndDelete(id);
+      res.status(200).json({ message: "Address deleted" });
+    } else {
+      throw new Error("There isn't an address with this id");
+    }
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -66,27 +73,24 @@ export const deleteAddressById = async (req, res) => {
 export const updateAddressById = async (req, res) => {
   const {
     params: { id },
-  } = req;
-  const {
     body: { name, country, city, street, houseNumber, postcode, phone },
   } = req;
-  const addressCondition =
-    name || country || city || street || houseNumber || postcode || phone;
 
   try {
-    if (addressCondition) {
-      await Address.findByIdAndUpdate(id, {
-        name,
-        country,
-        city,
-        street,
-        houseNumber,
-        postcode,
-        phone,
-      });
+    const address = {
+      name,
+      country,
+      city,
+      street,
+      houseNumber,
+      postcode,
+      phone,
+    };
+    if (hasUpdateProps(address)) {
+      await Address.findByIdAndUpdate(id, address);
       res.status(200).json({ message: "Address updated" });
     } else {
-      res.status(500).json({ message: "No data provided for address update" });
+      throw new Error("Address update requires at least one field");
     }
   } catch (err) {
     res.status(500).json({ message: err.message });

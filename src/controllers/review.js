@@ -13,7 +13,7 @@ export const getReviewsByUserId = async (req, res) => {
   } = req;
 
   try {
-    if (hasPaginationParams(page, limit)) {
+    if (hasPaginationParams({ page, limit })) {
       const reviews = await Review.find({ userId })
         .select(["-__v", "-userId"])
         .populate({
@@ -43,7 +43,7 @@ export const getReviewsByProductId = async (req, res) => {
 
   try {
     if (await productExists(productId)) {
-      if (hasPaginationParams(page, limit)) {
+      if (hasPaginationParams({ page, limit })) {
         const reviews = await Review.find({ productId })
           .select(["-__v", "-productId"])
           .populate({
@@ -117,7 +117,7 @@ export const updateReviewById = async (req, res) => {
         await Review.findByIdAndUpdate(id, review, { runValidators: true });
         res.status(200).json({ message: "Review updated" });
       } else {
-        throw new Error("Rating and text are required for review update");
+        throw new Error("Rating is required for review update");
       }
     } else {
       throw new Error("There isn't a review with this id");
