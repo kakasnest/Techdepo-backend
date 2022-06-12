@@ -76,8 +76,8 @@ export const createReview = async (req, res) => {
 
   try {
     if (await productExists(productId)) {
-      const product = { text, rating, userId, productId };
-      await Review.create(product);
+      const review = { text, rating, userId, productId };
+      await Review.create(review);
       res.status(200).json({ message: "Review created" });
     } else {
       throw new Error("There isn't a product with this id");
@@ -112,9 +112,12 @@ export const updateReviewById = async (req, res) => {
 
   try {
     if (await reviewExists(id)) {
-      const review = { text, rating };
-      if (hasUpdateProps(review)) {
-        await Review.findByIdAndUpdate(id, review, { runValidators: true });
+      if (hasUpdateProps(rating)) {
+        await Review.findByIdAndUpdate(
+          id,
+          { text, rating },
+          { runValidators: true }
+        );
         res.status(200).json({ message: "Review updated" });
       } else {
         throw new Error("Rating is required for review update");

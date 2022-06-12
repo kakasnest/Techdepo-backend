@@ -4,22 +4,39 @@ import { access, mkdir } from "fs";
 
 const storage = multer.diskStorage({
   destination: (req, file, next) => {
-    const filePath = join(dirname("."), "images", file.fieldname);
+    const { fieldname } = file;
+    const {
+      body: { name },
+    } = req;
 
-    access(filePath, (error) => {
-      if (error) {
-        mkdir(filePath, () => {
-          next(null, filePath);
+    try {
+      if (typeof name !== "undefined") {
+        const parsedName = name
+          .normalize("NFD")
+          .replace(/([\u0300-\u036f]|[^0-9a-zA-Z])/g, "")
+          .toLowerCase();
+
+        const filePath = join(dirname("."), "images", fieldname, parsedName);
+        access(filePath, (error) => {
+          if (error) {
+            mkdir(filePath, () => {
+              next(null, filePath);
+            });
+          } else {
+            next(null, filePath);
+          }
         });
       } else {
-        next(null, filePath);
+        throw new Error("Name of product is required");
       }
-    });
+    } catch (err) {
+      return next(err);
+    }
   },
   filename: (req, file, next) => {
-    const random = Math.round(Math.random() * 1e9);
-    const fileExtension = file.originalname.split(".").pop();
-    const uniqueName = `${random}${Date.now()}.${fileExtension}`;
+    const { originalname } = file;
+    const fileExtension = originalname.split(".").pop();
+    const uniqueName = `${Date.now()}.${fileExtension}`;
     next(null, uniqueName);
   },
 });
@@ -27,8 +44,9 @@ const storage = multer.diskStorage({
 export const upload = multer({
   storage,
   fileFilter: (req, file, next) => {
-    const { mimetype: type } = file;
-    if (/^(image\/).+/.test(type)) {
+    const { mimetype } = file;
+
+    if (/^(image\/).+/.test(mimetype)) {
       next(null, true);
     } else {
       next(null, false);

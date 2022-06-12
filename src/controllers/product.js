@@ -137,7 +137,7 @@ export const createProduct = async (req, res) => {
     if (categoriesCondition)
       for (let i = 0; i < categories.length; i++) {
         const categoryId = categories[i];
-        if (isValidObjectId(categoryId)) {
+        if (true) {
           const isValidCategory = await Category.exists({ _id: categoryId });
           if (isValidCategory && !validCategories.includes(categoryId))
             validCategories.push(categoryId);

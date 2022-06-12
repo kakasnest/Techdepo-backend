@@ -90,7 +90,7 @@ export const updateAddressById = async (req, res) => {
       await Address.findByIdAndUpdate(id, address);
       res.status(200).json({ message: "Address updated" });
     } else {
-      throw new Error("Address update requires at least one field");
+      throw new Error("Address update requires at least one valid field");
     }
   } catch (err) {
     res.status(500).json({ message: err.message });
