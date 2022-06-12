@@ -1,7 +1,5 @@
-import { join, sep, dirname } from "path";
-import { unlink } from "fs";
-
 import Category from "../models/category.js";
+import { categoryExists } from "../utils/controllerUtils/category.js";
 import {
   getAPIPath,
   unlinkImage,
@@ -47,9 +45,11 @@ export const deleteCategoryById = async (req, res) => {
   } = req;
 
   try {
-    const { image } = await Category.findByIdAndDelete(id);
-    unlinkImageDir(image);
-    res.status(200).json({ message: "Category deleted" });
+    if (await categoryExists(id)) {
+      const { image } = await Category.findByIdAndDelete(id);
+      unlinkImageDir(image);
+      res.status(200).json({ message: "Category deleted" });
+    }
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -63,20 +63,24 @@ export const updateCategoryById = async (req, res) => {
   } = req;
 
   try {
-    if (file) {
-      const { path } = file;
-      const image = getAPIPath(path);
-      const { image: oldImage } = await Category.findByIdAndUpdate(id, {
-        image,
-        name,
-      });
-      unlinkImage(oldImage, "db");
-      res.status(200).json({ message: "Category updated" });
-    } else if (name) {
-      await Category.findByIdAndUpdate(id, { name });
-      res.status(200).json({ message: "Category updated" });
+    if (await categoryExists(id)) {
+      if (file) {
+        const { path } = file;
+        const image = getAPIPath(path);
+        const { image: oldImage } = await Category.findByIdAndUpdate(id, {
+          image,
+          name,
+        });
+        unlinkImage(oldImage, "db");
+        res.status(200).json({ message: "Category updated" });
+      } else if (name) {
+        await Category.findByIdAndUpdate(id, { name });
+        res.status(200).json({ message: "Category updated" });
+      } else {
+        throw new Error("No data provided for category update");
+      }
     } else {
-      throw new Error("No data provided for category update");
+      throw new Error("There isn't a category with this id");
     }
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -89,14 +93,18 @@ export const resetCategoryImageById = async (req, res) => {
   } = req;
 
   try {
-    const { image } = await Category.findById(id);
-    await Category.findByIdAndUpdate(id, {
-      image: "/api/images/default/placeholder.png",
-    });
-    unlinkImage(image);
-    res
-      .status(200)
-      .json({ message: "Category has been reset with default image" });
+    if (await categoryExists(id)) {
+      const { image } = await Category.findById(id);
+      await Category.findByIdAndUpdate(id, {
+        image: "/api/images/default/placeholder.png",
+      });
+      unlinkImage(image);
+      res
+        .status(200)
+        .json({ message: "Category has been reset with default image" });
+    } else {
+      throw new Error("There isn't a category with this id");
+    }
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
