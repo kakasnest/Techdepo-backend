@@ -184,7 +184,7 @@ export const createOrder = async (req, res, next) => {
 
         if (orderLinesWithOrderId.length > 0) {
           await OrderLine.insertMany(orderLinesWithOrderId);
-          res.status(201).json({ message: "Order created" });
+          res.status(200).json({ message: "Order created" });
         } else {
           res.status(500).json({
             message: "OrderLines must contain valid productIds and quantities",

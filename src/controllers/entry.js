@@ -13,13 +13,12 @@ export const login = async (req, res) => {
 
   try {
     const user = await User.findOne({ email: email }).select("+password");
-
     if (!user) {
-      res.status(500).json({ message: "There isn't a user with such a email" });
+      throw new Error("There isn't a user with such a email");
     } else {
       const match = await compare(password, user.password);
       if (!match) {
-        res.status(500).json({ message: "Wrong password" });
+        throw new Error("Wrong password");
       } else {
         const token = jwt.sign({ userId: user._id }, secret, {
           expiresIn: "7d",
@@ -41,13 +40,12 @@ export const register = async (req, res) => {
 
   try {
     const user = await User.findOne({ email: email });
-
     if (user) {
-      res.status(500).json({ message: "Email already in use" });
+      throw new Error("Email already in use");
     } else {
       const hashed = await hash(password, 10);
       await User.create({ email, password: hashed });
-      res.status(201).json({ message: "Registration complete" });
+      res.status(200).json({ message: "Registration complete" });
     }
   } catch (err) {
     res.status(500).json({ message: err.message });

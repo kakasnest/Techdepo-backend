@@ -161,7 +161,7 @@ export const createProduct = async (req, res) => {
       product.thumbnail = images[0];
     }
     await Product.create(product);
-    res.status(201).json({ message: "Product created" });
+    res.status(200).json({ message: "Product created" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
