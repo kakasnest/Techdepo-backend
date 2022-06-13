@@ -2,8 +2,9 @@ import Category from "../models/category.js";
 import { categoryExists } from "../utils/controllerUtils/category.js";
 import {
   getAPIPath,
+  hasUpdateProp,
+  hasUpdateProps,
   unlinkImage,
-  unlinkImageDir,
 } from "../utils/controllerUtils/general.js";
 
 export const getCategories = async (req, res) => {
@@ -47,7 +48,7 @@ export const deleteCategoryById = async (req, res) => {
   try {
     if (await categoryExists(id)) {
       const { image } = await Category.findByIdAndDelete(id);
-      unlinkImageDir(image);
+      unlinkImage(image, "db");
       res.status(200).json({ message: "Category deleted" });
     }
   } catch (err) {
@@ -64,7 +65,7 @@ export const updateCategoryById = async (req, res) => {
 
   try {
     if (await categoryExists(id)) {
-      if (file) {
+      if (hasUpdateProps({ file, name })) {
         const { path } = file;
         const image = getAPIPath(path);
         const { image: oldImage } = await Category.findByIdAndUpdate(id, {
@@ -73,7 +74,7 @@ export const updateCategoryById = async (req, res) => {
         });
         unlinkImage(oldImage, "db");
         res.status(200).json({ message: "Category updated" });
-      } else if (name) {
+      } else if (hasUpdateProp(name)) {
         await Category.findByIdAndUpdate(id, { name });
         res.status(200).json({ message: "Category updated" });
       } else {
@@ -94,11 +95,10 @@ export const resetCategoryImageById = async (req, res) => {
 
   try {
     if (await categoryExists(id)) {
-      const { image } = await Category.findById(id);
-      await Category.findByIdAndUpdate(id, {
+      const { image: oldImage } = await Category.findByIdAndUpdate(id, {
         image: "/api/images/default/placeholder.png",
       });
-      unlinkImage(image);
+      unlinkImage(oldImage, "db");
       res
         .status(200)
         .json({ message: "Category has been reset with default image" });

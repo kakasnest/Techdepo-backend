@@ -1,10 +1,10 @@
 import Review from "../models/review.js";
-import { hasPaginationParams } from "../utils/controllerUtils/general.js";
-import { productExists } from "../utils/controllerUtils/product.js";
 import {
+  hasPaginationParams,
   hasUpdateProps,
-  reviewExists,
-} from "../utils/controllerUtils/review.js";
+} from "../utils/controllerUtils/general.js";
+import { productExists } from "../utils/controllerUtils/product.js";
+import { reviewExists } from "../utils/controllerUtils/review.js";
 
 export const getReviewsByUserId = async (req, res) => {
   const {
@@ -112,15 +112,12 @@ export const updateReviewById = async (req, res) => {
 
   try {
     if (await reviewExists(id)) {
-      if (hasUpdateProps(rating)) {
-        await Review.findByIdAndUpdate(
-          id,
-          { text, rating },
-          { runValidators: true }
-        );
+      const review = { text, rating };
+      if (hasUpdateProps(review)) {
+        await Review.findByIdAndUpdate(id, review, { runValidators: true });
         res.status(200).json({ message: "Review updated" });
       } else {
-        throw new Error("Rating is required for review update");
+        throw new Error("Rating and text are required for review update");
       }
     } else {
       throw new Error("There isn't a review with this id");

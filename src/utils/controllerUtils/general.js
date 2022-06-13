@@ -40,11 +40,16 @@ export const unlinkImage = (path, pathType = "fs") => {
   }
 };
 
-export const unlinkImageDir = (path) => {
-  if (!isDefaultDir(path)) {
-    const dirPath = path.split("/").slice(2, -1).join(sep);
-    rm(dirPath, { recursive: true }, (error) => {
-      if (error) console.log(error);
-    });
-  }
+export const hasUpdateProp = (prop) => {
+  return typeof prop !== "undefined";
+};
+
+export const hasUpdateProps = (object) => {
+  const props = Object.keys(object);
+  const results = props.map((prop) => {
+    return hasUpdateProp(object[prop]);
+  });
+
+  if (!results.includes(false)) return true;
+  else return false;
 };

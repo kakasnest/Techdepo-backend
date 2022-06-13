@@ -13,7 +13,3 @@ export const reviewExists = async (id) => {
     console.log(err.message);
   }
 };
-
-export const hasUpdateProps = (rating) => {
-  return typeof rating !== "undefined";
-};

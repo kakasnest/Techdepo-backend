@@ -1,9 +1,9 @@
 import Address from "../models/address.js";
+import { addressExists } from "../utils/controllerUtils/address.js";
 import {
-  addressExists,
+  hasPaginationParams,
   hasUpdateProps,
-} from "../utils/controllerUtils/address.js";
-import { hasPaginationParams } from "../utils/controllerUtils/general.js";
+} from "../utils/controllerUtils/general.js";
 
 export const getAddressesByUserId = async (req, res) => {
   const {
@@ -90,7 +90,9 @@ export const updateAddressById = async (req, res) => {
       await Address.findByIdAndUpdate(id, address);
       res.status(200).json({ message: "Address updated" });
     } else {
-      throw new Error("Address update requires at least one valid field");
+      throw new Error(
+        "Address update requires: name, country, city, street, houseNumber, postcode, phone"
+      );
     }
   } catch (err) {
     res.status(500).json({ message: err.message });
