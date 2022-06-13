@@ -6,7 +6,7 @@ import {
   hasLines,
   isValidQuantity,
   orderExists,
-  orderLines,
+  orderLinesByOrderId,
   updateLine,
 } from "../utils/controllerUtils/order.js";
 import { productExists } from "../utils/controllerUtils/product.js";
@@ -19,7 +19,7 @@ export const getOrderById = async (req, res) => {
   try {
     if (await orderExists(id)) {
       const order = await Order.findById(id).select(["state", "userId"]);
-      const lines = await OrderLine.aggregate(orderLines(id));
+      const lines = await OrderLine.aggregate(orderLinesByOrderId(id));
       res.status(200).json({ ...order.toObject(), id: order._id, lines });
     } else {
       throw new Error("There isn't an order with this id");
@@ -44,7 +44,7 @@ export const getOrdersByUserId = async (req, res) => {
         .limit(limit);
       for (let i = 0; i < orders.length; i++) {
         const order = orders[i];
-        const lines = await OrderLine.aggregate(orderLines(order._id));
+        const lines = await OrderLine.aggregate(orderLinesByOrderId(order._id));
         orders[i] = { order, lines };
       }
       res.status(200).json(orders);

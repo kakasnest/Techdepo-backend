@@ -14,7 +14,7 @@ export const orderExists = async (id) => {
   }
 };
 
-export const orderLines = (id) => {
+export const orderLinesByOrderId = (id) => {
   return [
     { $match: { orderId: ObjectId(id) } },
     {
