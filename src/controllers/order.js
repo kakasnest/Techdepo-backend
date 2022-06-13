@@ -1,8 +1,15 @@
 import Order from "../models/order.js";
 import OrderLine from "../models/orderLine.js";
-import Product from "../models/product.js";
 import { hasPaginationParams } from "../utils/controllerUtils/general.js";
-import { orderExists, orderLines } from "../utils/controllerUtils/order.js";
+import {
+  alreadyInLines,
+  hasLines,
+  isValidQuantity,
+  orderExists,
+  orderLines,
+  updateLine,
+} from "../utils/controllerUtils/order.js";
+import { productExists } from "../utils/controllerUtils/product.js";
 
 export const getOrderById = async (req, res) => {
   const {
@@ -29,7 +36,7 @@ export const getOrdersByUserId = async (req, res) => {
   } = req;
 
   try {
-    if (hasPaginationParams({ page, limit })) {
+    if (hasPaginationParams(page, limit)) {
       const orders = await Order.find({ userId })
         .select(["state", "createdAt"])
         .sort({ _id: 1 })
@@ -51,99 +58,40 @@ export const getOrdersByUserId = async (req, res) => {
   }
 };
 
-export const createOrder = async (req, res, next) => {
+export const createOrder = async (req, res) => {
   const {
     body: { orderLines },
     userId,
   } = req;
-  const orderLinesCondition =
-    orderLines && Array.isArray(orderLines) && orderLines.length > 0;
 
   try {
-    const { id: orderId } = await Order.create({ userId });
-    try {
-      if (orderLinesCondition) {
-        const orderLinesWithOrderId = [];
-        // const orderLinesWithOrderId = orderLines.map(async (orderLine) => {
-        //   try {
-        //     const { productId, quantity } = orderLine;
-        //     throw new Error("asd");
-        //     const quantityCondition =
-        //       quantity && Number.isInteger(quantity) && quantity > 0;
-        //     if (isValidObjectId(productId) && quantityCondition) {
-        //       const isValidProductId = await Product.exists({ _id: productId });
-        //       if (
-        //         isValidProductId &&
-        //         !orderLinesWithOrderId.some((o) => o.productId === productId)
-        //       ) {
-        //         return { productId, quantity, orderId };
-        //       }
-        //       if (
-        //         isValidProductId &&
-        //         orderLinesWithOrderId.some((o) => o.productId === productId)
-        //       ) {
-        //         const index = orderLinesWithOrderId.findIndex(
-        //           (o) => o.productId === productId
-        //         );
-        //         const removed = orderLinesWithOrderId.slice(index, 1)[0];
-        //         const newLine = {
-        //           ...removed,
-        //           quantity: quantity + removed.quantity,
-        //         };
-        //         return newLine;
-        //       }
-        //       return;
-        //     }
-        //   } catch (error) {
-        //     console.log(error);
-        //     return next(error);
-        //   }
-        // });
-        for (let i = 0; i < orderLines.length; i++) {
-          const { productId, quantity } = orderLines[i];
-          const quantityCondition =
-            quantity && Number.isInteger(quantity) && quantity > 0;
-          if (quantityCondition) {
-            const isValidProductId = await Product.exists({ _id: productId });
-            if (
-              isValidProductId &&
-              !orderLinesWithOrderId.some((o) => o.productId === productId)
-            ) {
-              orderLinesWithOrderId.push({ productId, quantity, orderId });
-            } else if (
-              isValidProductId &&
-              orderLinesWithOrderId.some((o) => o.productId === productId)
-            ) {
-              const index = orderLinesWithOrderId.findIndex(
-                (o) => o.productId === productId
-              );
-              const removed = orderLinesWithOrderId.slice(index, 1)[0];
-              const newLine = {
-                ...removed,
-                quantity: quantity + removed.quantity,
-              };
-              orderLinesWithOrderId.push(newLine);
-            }
-          }
+    if (hasLines(orderLines)) {
+      const lines = [];
+      for (let i = 0; i < orderLines.length; i++) {
+        const { productId, quantity } = orderLines[i];
+        if ((await productExists(productId)) && isValidQuantity(quantity)) {
+          if (alreadyInLines(lines, productId))
+            updateLine(lines, productId, quantity);
+          else lines.push({ productId, quantity });
         }
-
-        if (orderLinesWithOrderId.length > 0) {
-          await OrderLine.insertMany(orderLinesWithOrderId);
-          res.status(200).json({ message: "Order created" });
-        } else {
-          res.status(500).json({
-            message: "OrderLines must contain valid productIds and quantities",
-          });
-        }
-      } else {
-        res.status(500).json({
-          message:
-            "Field orderLines is required and must be an array of objects containing productIds and quantities",
-        });
       }
-    } catch (err) {
-      await Order.findByIdAndDelete(orderId);
-      res.status(500).json({ message: err.message });
+      if (lines.length > 0) {
+        const { id: orderId } = await Order.create({ userId });
+        for (let i = 0; i < lines.length; i++) {
+          const { productId, quantity } = lines[i];
+          lines[i] = { productId, quantity, orderId };
+        }
+        await OrderLine.insertMany(lines);
+        res.status(200).json({ message: "Order created" });
+      } else {
+        throw new Error(
+          "OrderLines must contain valid productIds and quantities"
+        );
+      }
+    } else {
+      throw new Error(
+        "Field orderLines is required and must be an array of objects containing productIds and quantities"
+      );
     }
   } catch (err) {
     res.status(500).json({ message: err.message });

@@ -1,5 +1,5 @@
 import { join, sep } from "path";
-import { unlink, rm } from "fs";
+import { unlink } from "fs";
 
 const checkPage = (page) => {
   const pageAsNumber = parseInt(page, 10);
@@ -11,7 +11,7 @@ const checkLimit = (limit) => {
   return !Number.isNaN(limitAsNumber) && limitAsNumber > 0;
 };
 
-export const hasPaginationParams = ({ page, limit }) => {
+export const hasPaginationParams = (page, limit) => {
   return checkPage(page) && checkLimit(limit);
 };
 

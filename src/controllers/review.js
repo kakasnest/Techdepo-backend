@@ -13,7 +13,7 @@ export const getReviewsByUserId = async (req, res) => {
   } = req;
 
   try {
-    if (hasPaginationParams({ page, limit })) {
+    if (hasPaginationParams(page, limit)) {
       const reviews = await Review.find({ userId })
         .select(["-__v", "-userId"])
         .populate({
@@ -43,7 +43,7 @@ export const getReviewsByProductId = async (req, res) => {
 
   try {
     if (await productExists(productId)) {
-      if (hasPaginationParams({ page, limit })) {
+      if (hasPaginationParams(page, limit)) {
         const reviews = await Review.find({ productId })
           .select(["-__v", "-productId"])
           .populate({

@@ -12,7 +12,7 @@ export const getAddressesByUserId = async (req, res) => {
   } = req;
 
   try {
-    if (hasPaginationParams({ page, limit })) {
+    if (hasPaginationParams(page, limit)) {
       const addresses = await Address.find({ userId })
         .select(["-createdAt", "-updatedAt", "-__v", "-userId"])
         .sort({ name: 1 })

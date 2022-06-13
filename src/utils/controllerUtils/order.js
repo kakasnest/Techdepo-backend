@@ -42,41 +42,26 @@ export const orderLines = (id) => {
   ];
 };
 
-export const addLineToOrder = (order) => {};
+export const hasLines = (orderLines) => {
+  return (
+    typeof orderLines !== "undefined" &&
+    Array.isArray(orderLines) &&
+    orderLines.length > 0
+  );
+};
 
-// TEMP
-// const orderLinesData = [];
-// [
-//     { $match: { orderId: ObjectId(orderId) } },
-//     {
-//       $lookup: {
-//         from: "products",
-//         localField: "productId",
-//         foreignField: "_id",
-//         as: "product",
-//       },
-//     },
-//     {
-//       $unwind: "$product",
-//     },
-//     {
-//       $project: {
-//         quantity: 1,
-//         "product.price": 1,
-//         "product.thumbnail": 1,
-//         "product.id": "$product._id",
-//         orderId: 1,
-//         _id: 0,
-//         totalPerProduct: { $multiply: ["$product.price", "$quantity"] },
-//       },
-//     },
-//   ]
+export const isValidQuantity = (quantity) => {
+  return (
+    typeof quantity !== undefined && Number.isInteger(quantity) && quantity > 0
+  );
+};
 
-// orderLinesData.push(...orderLinesByOrder);
+export const alreadyInLines = (orderLines, productId) => {
+  return orderLines.some((e) => e.productId === productId);
+};
 
-// const response = orders.map((o) => {
-//     const orderLines = orderLinesData.filter((l) => {
-//       return l.orderId.toString() === o.id;
-//     });
-//     return { ...o.toObject(), id: o._id, orderLines };
-//   });
+export const updateLine = (orderLines, productId, additionalQuantity) => {
+  const index = orderLines.findIndex((o) => o.productId === productId);
+  const { quantity } = orderLines[index];
+  orderLines[index] = { productId, quantity: quantity + additionalQuantity };
+};
