@@ -15,19 +15,16 @@ export const getProductById = async (req, res) => {
   } = req;
 
   try {
-    const product = await Product.findOne({ _id: id, isActive: true })
-      .select(["-createdAt", "-updatedAt", "-__v", "-thumbnail"])
-      .populate({
-        path: "categories",
-        model: "Category",
-        select: "name",
-      });
-    const ratingData = await Review.aggregate(productRating(id));
-    // const rating = ratingData[0];
-    // const categories = product.categories.map((c) => {
-    //   return { ...c.toObject(), id: c._id };
-    // });
-    res.status(200).json({ ...product.toObject(), ...ratingData });
+    const product = await Product.findOne({ _id: id, isActive: true }).select([
+      "-createdAt",
+      "-updatedAt",
+      "-__v",
+      "-thumbnail",
+      "-categories",
+    ]);
+    const ratingDataAsArray = await Review.aggregate(productRating(id));
+    const { rating, ratingCount } = ratingDataAsArray[0];
+    res.status(200).json({ ...product.toObject(), rating, ratingCount });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -129,26 +126,27 @@ export const createProduct = async (req, res) => {
     body: { name, description, stock, price, categories, isActive },
     files,
   } = req;
-  const categoriesCondition =
-    categories && Array.isArray(categories) && categories.length > 0;
+  // const categoriesCondition =
+  //   categories && Array.isArray(categories) && categories.length > 0;
 
   try {
-    const validCategories = [];
-    if (categoriesCondition)
-      for (let i = 0; i < categories.length; i++) {
-        const categoryId = categories[i];
-        if (true) {
-          const isValidCategory = await Category.exists({ _id: categoryId });
-          if (isValidCategory && !validCategories.includes(categoryId))
-            validCategories.push(categoryId);
-        }
-      }
+    // const validCategories = [];
+    // if (true)
+    //   for (let i = 0; i < categories.length; i++) {
+    //     console.log(categories[i]);
+    //     const categoryId = ObjectId(categories[i]);
+    //     if (true) {
+    //       const isValidCategory = await Category.exists({ _id: categoryId });
+    //       if (isValidCategory && !validCategories.includes(categoryId))
+    //         validCategories.push(categoryId);
+    //     }
+    //   }
     const product = {
       name,
       description,
       stock,
       price,
-      categories: validCategories,
+      categories,
       isActive,
     };
     if (files.length > 0) {

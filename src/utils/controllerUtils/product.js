@@ -18,13 +18,13 @@ export const productRating = (id) => {
   return [
     {
       $facet: {
-        productRating: [
+        rating: [
           { $match: { productId: ObjectId(id) } },
           {
-            $group: { _id: "$productId", rating: { $avg: "$rating" } },
+            $group: { _id: "$productId", ratingAvg: { $avg: "$rating" } },
           },
         ],
-        productRatingCount: [
+        ratingCount: [
           { $match: { productId: ObjectId(id) } },
           {
             $count: "ratingCount",
@@ -33,23 +33,15 @@ export const productRating = (id) => {
       },
     },
     {
-      $unwind: "$productRating",
+      $unwind: "$rating",
     },
     {
-      $unwind: "$productRatingCount",
-    },
-    {
-      $addFields: {
-        merged: {
-          $mergeObjects: ["$productRating", "$productRatingCount"],
-        },
-      },
+      $unwind: "$ratingCount",
     },
     {
       $project: {
-        rating: "$merged.rating",
-        ratingCount: "$merged.ratingCount",
-        id: "$merged._id",
+        rating: "$rating.ratingAvg",
+        ratingCount: "$ratingCount.ratingCount",
       },
     },
   ];

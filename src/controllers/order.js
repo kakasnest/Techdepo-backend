@@ -45,7 +45,7 @@ export const getOrdersByUserId = async (req, res) => {
       for (let i = 0; i < orders.length; i++) {
         const order = orders[i];
         const lines = await OrderLine.aggregate(orderLinesByOrderId(order._id));
-        orders[i] = { order, lines };
+        orders[i] = { ...order.toObject(), lines };
       }
       res.status(200).json(orders);
     } else {
