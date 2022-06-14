@@ -6,8 +6,16 @@ import Product from "../models/product.js";
 import Review from "../models/review.js";
 import Category from "../models/category.js";
 import { productRating } from "../utils/controllerUtils/product.js";
-
-const { ObjectId } = mongoose.Types;
+import {
+  getAPIPath,
+  hasPaginationParams,
+} from "../utils/controllerUtils/general.js";
+import {
+  alreadyInValidCategories,
+  categoryExists,
+  hasCategories,
+  hasOneCategory,
+} from "../utils/controllerUtils/category.js";
 
 export const getProductById = async (req, res) => {
   const {
@@ -30,19 +38,13 @@ export const getProductById = async (req, res) => {
   }
 };
 
-export const getProductsByCategory = async (req, res) => {
+export const getProductsByCategoryId = async (req, res) => {
   const {
-    body: { categoryId },
-    query,
+    query: { page, limit, categoryId },
   } = req;
-  const page = parseInt(query.page);
-  const limit = parseInt(query.limit);
-  const pageCondition = page && Number.isInteger(page) && page > 0;
-  const limitCondition =
-    limit && Number.isInteger(limit) && limit > 0 && limit <= 100;
 
   try {
-    if (pageCondition && limitCondition) {
+    if (hasPaginationParams(page, limit)) {
       const products = await Product.find({
         categories: categoryId,
         isActive: true,
@@ -58,63 +60,20 @@ export const getProductsByCategory = async (req, res) => {
         .sort({ _id: 1 })
         .skip((page - 1) * limit)
         .limit(limit);
-      const ratingsData = [];
       for (let i = 0; i < products.length; i++) {
-        const { id } = products[i];
-        const ratingData = await Review.aggregate([
-          {
-            $facet: {
-              productRating: [
-                { $match: { productId: ObjectId(id) } },
-                {
-                  $group: { _id: "$productId", rating: { $avg: "$rating" } },
-                },
-              ],
-              productRatingCount: [
-                { $match: { productId: ObjectId(id) } },
-                {
-                  $count: "ratingCount",
-                },
-              ],
-            },
-          },
-          {
-            $unwind: "$productRating",
-          },
-          {
-            $unwind: "$productRatingCount",
-          },
-          {
-            $addFields: {
-              merged: {
-                $mergeObjects: ["$productRating", "$productRatingCount"],
-              },
-            },
-          },
-          {
-            $project: {
-              rating: "$merged.rating",
-              ratingCount: "$merged.ratingCount",
-              id: "$merged._id",
-            },
-          },
-        ]);
-        ratingsData.push(ratingData);
+        const product = products[i];
+        const rating = await Review.aggregate(productRating(product._id));
+        products[i] = {
+          ...product.toObject(),
+          id: product._id,
+          ...rating[0],
+        };
       }
-      const ratings = ratingsData.filter((r) => r.length > 0).map((r) => r[0]);
-      const response = products.map((p) => {
-        const hasRatings = ratings.find((r) => {
-          return r.id.toString() === p.id;
-        });
-        if (hasRatings) return { ...p.toObject(), ...hasRatings };
-        return p;
-      });
-      res.status(200).json(response);
+      res.status(200).json(products);
     } else {
-      res.status(500).json({
-        message:
-          "The page and limit parameters must be integer convertable strings greater than zero",
-      });
+      throw new Error(
+        "The page and limit parameters must be integers greater than zero"
+      );
     }
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -126,34 +85,34 @@ export const createProduct = async (req, res) => {
     body: { name, description, stock, price, categories, isActive },
     files,
   } = req;
-  // const categoriesCondition =
-  //   categories && Array.isArray(categories) && categories.length > 0;
 
   try {
-    // const validCategories = [];
-    // if (true)
-    //   for (let i = 0; i < categories.length; i++) {
-    //     console.log(categories[i]);
-    //     const categoryId = ObjectId(categories[i]);
-    //     if (true) {
-    //       const isValidCategory = await Category.exists({ _id: categoryId });
-    //       if (isValidCategory && !validCategories.includes(categoryId))
-    //         validCategories.push(categoryId);
-    //     }
-    //   }
+    const validCategories = [];
+    if (hasCategories(categories)) {
+      for (let i = 0; i < categories.length; i++) {
+        const category = categories[i];
+        if (categoryExists(category)) {
+          if (!alreadyInValidCategories(validCategories, category))
+            validCategories.push(category);
+        }
+      }
+    } else if (hasOneCategory(categories)) {
+      if (categoryExists(categories)) {
+        validCategories.push(categories);
+      }
+    }
+
     const product = {
       name,
       description,
       stock,
       price,
-      categories,
+      categories: validCategories,
       isActive,
     };
     if (files.length > 0) {
-      const images = files.map((f) => {
-        const defaultPath = join(sep, "api", f.path);
-        const image = defaultPath.replaceAll("\\", "/");
-        return image;
+      const images = files.map(({ path }) => {
+        return getAPIPath(path);
       });
       product.images = images;
       product.thumbnail = images[0];

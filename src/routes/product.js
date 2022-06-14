@@ -3,7 +3,7 @@ import { Router } from "express";
 import {
   createProduct,
   getProductById,
-  getProductsByCategory,
+  getProductsByCategoryId,
   resetProductImagesById,
   updateProductById,
 } from "../controllers/product.js";
@@ -13,7 +13,7 @@ import { upload } from "../middlewares/storage.js";
 const router = Router();
 
 router.route("/:id").get(getProductById);
-router.route("/").get(getProductsByCategory);
+router.route("/").get(getProductsByCategoryId);
 router.route("/").post(auth, upload.array("product_images"), createProduct);
 router
   .route("/:id")
