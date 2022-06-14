@@ -37,8 +37,7 @@ export const getReviewsByUserId = async (req, res) => {
 
 export const getReviewsByProductId = async (req, res) => {
   const {
-    query: { page, limit },
-    body: { productId },
+    query: { page, limit, productId },
   } = req;
 
   try {
