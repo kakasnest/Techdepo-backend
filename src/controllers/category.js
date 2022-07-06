@@ -1,11 +1,11 @@
 import Category from "../models/category.js";
-import { categoryExists } from "../utils/controllerUtils/category.js";
+import { categoryExists } from "../utils/category.js";
 import {
   getAPIPath,
   hasUpdateProp,
   hasUpdateProps,
   unlinkImage,
-} from "../utils/controllerUtils/general.js";
+} from "../utils/general.js";
 
 export const getCategories = async (req, res) => {
   try {
@@ -101,7 +101,7 @@ export const resetCategoryImageById = async (req, res) => {
       unlinkImage(oldImage, "db");
       res
         .status(200)
-        .json({ message: "Category has been reset with default image" });
+        .json({ message: "Category has been reset using default image" });
     } else {
       throw new Error("There isn't a category with this id");
     }

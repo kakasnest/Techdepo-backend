@@ -3,7 +3,7 @@ const {
   Types: { ObjectId },
 } = mongoose;
 
-import Product from "../../models/product.js";
+import Product from "../models/product.js";
 
 export const productExists = async (id) => {
   const isValidId = ObjectId.isValid(id);

@@ -3,7 +3,7 @@ const {
   Types: { ObjectId },
 } = mongoose;
 
-import Category from "../../models/category.js";
+import Category from "../models/category.js";
 
 export const categoryExists = async (id) => {
   const isValidId = ObjectId.isValid(id);

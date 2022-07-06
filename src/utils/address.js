@@ -3,12 +3,12 @@ const {
   Types: { ObjectId },
 } = mongoose;
 
-import Review from "../../models/review.js";
+import Address from "../models/address.js";
 
-export const reviewExists = async (id) => {
+export const addressExists = async (id) => {
   const isValidId = ObjectId.isValid(id);
   try {
-    return isValidId ? null !== (await Review.exists({ _id: id })) : false;
+    return isValidId ? null !== (await Address.exists({ _id: id })) : false;
   } catch (err) {
     console.log(err.message);
   }

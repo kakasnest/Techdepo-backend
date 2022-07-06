@@ -1,15 +1,14 @@
 import Order from "../models/order.js";
 import OrderLine from "../models/orderLine.js";
-import { hasPaginationParams } from "../utils/controllerUtils/general.js";
+import { hasPaginationParams } from "../utils/general.js";
 import {
   alreadyInLines,
   hasLines,
   isValidQuantity,
-  orderExists,
   orderLinesByOrderId,
   updateLine,
-} from "../utils/controllerUtils/order.js";
-import { productExists } from "../utils/controllerUtils/product.js";
+} from "../utils/order.js";
+import { productExists } from "../utils/product.js";
 
 export const getOrderById = async (req, res) => {
   const {
@@ -17,13 +16,9 @@ export const getOrderById = async (req, res) => {
   } = req;
 
   try {
-    if (await orderExists(id)) {
-      const order = await Order.findById(id).select(["state", "userId"]);
-      const lines = await OrderLine.aggregate(orderLinesByOrderId(id));
-      res.status(200).json({ ...order.toObject(), id: order._id, lines });
-    } else {
-      throw new Error("There isn't an order with this id");
-    }
+    const order = await Order.findById(id).select(["state", "userId"]);
+    const lines = await OrderLine.aggregate(orderLinesByOrderId(id));
+    res.status(200).json({ ...order.toObject(), id: order._id, lines });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

@@ -1,9 +1,6 @@
 import Address from "../models/address.js";
-import { addressExists } from "../utils/controllerUtils/address.js";
-import {
-  hasPaginationParams,
-  hasUpdateProps,
-} from "../utils/controllerUtils/general.js";
+import { addressExists } from "../utils/address.js";
+import { hasPaginationParams, hasUpdateProps } from "../utils/general.js";
 
 export const getAddressesByUserId = async (req, res) => {
   const {

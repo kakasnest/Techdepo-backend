@@ -1,21 +1,17 @@
 import { join, sep, dirname } from "path";
-import mongoose from "mongoose";
 import { unlink } from "fs";
 
 import Product from "../models/product.js";
 import Review from "../models/review.js";
 import Category from "../models/category.js";
-import { productRating } from "../utils/controllerUtils/product.js";
-import {
-  getAPIPath,
-  hasPaginationParams,
-} from "../utils/controllerUtils/general.js";
+import { productRating } from "../utils/product.js";
 import {
   alreadyInValidCategories,
   categoryExists,
   hasCategories,
   hasOneCategory,
-} from "../utils/controllerUtils/category.js";
+} from "../utils/category.js";
+import { getAPIPath, hasPaginationParams } from "../utils/general.js";
 
 export const getProductById = async (req, res) => {
   const {
@@ -91,13 +87,13 @@ export const createProduct = async (req, res) => {
     if (hasCategories(categories)) {
       for (let i = 0; i < categories.length; i++) {
         const category = categories[i];
-        if (categoryExists(category)) {
+        if (await categoryExists(category)) {
           if (!alreadyInValidCategories(validCategories, category))
             validCategories.push(category);
         }
       }
     } else if (hasOneCategory(categories)) {
-      if (categoryExists(categories)) {
+      if (await categoryExists(categories)) {
         validCategories.push(categories);
       }
     }
@@ -227,9 +223,9 @@ export const resetProductImagesById = async (req, res) => {
         images: ["/api/images/default/placeholder.png"],
         thumbnail: "/api/images/default/placeholder.png",
       });
-      res
-        .status(200)
-        .json({ message: "Category has been reset with default image" });
+      res.status(200).json({
+        message: "Product images have been reset using default image",
+      });
     }
   } catch (err) {
     res.status(500).json({ message: err.message });
