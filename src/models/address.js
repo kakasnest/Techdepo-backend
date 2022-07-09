@@ -42,7 +42,10 @@ const addressSchema = new Schema(
     phone: {
       type: String,
       trim: true,
-      required: [true, "Phone number of address is required"],
+      required: [
+        true,
+        "The phone number of a contact at the address is required",
+      ],
     },
   },
   {

@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { generalPlaceholderPath } from "../utils/database_related/defaultPathsForImages";
 
 const { Schema } = mongoose;
 const categorySchema = new Schema(
@@ -11,7 +12,7 @@ const categorySchema = new Schema(
     },
     image: {
       type: String,
-      default: "/api/images/default/placeholder.png",
+      default: generalPlaceholderPath,
     },
   },
   {

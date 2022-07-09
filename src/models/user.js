@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { profilePlaceholderPath } from "../utils/database_related/defaultPathsForImages";
 
 const { Schema } = mongoose;
 const userSchema = new Schema(
@@ -32,7 +33,7 @@ const userSchema = new Schema(
     },
     image: {
       type: String,
-      default: "/api/images/default/default/profile.png",
+      default: profilePlaceholderPath,
     },
   },
   {

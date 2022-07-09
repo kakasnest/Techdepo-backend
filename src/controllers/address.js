@@ -1,6 +1,5 @@
 import Address from "../models/address.js";
-import { addressExists } from "../utils/address.js";
-import { hasPaginationParams, hasUpdateProps } from "../utils/general.js";
+import { checkPaginationParams } from "../utils/general.js";
 
 export const getAddressesByUserId = async (req, res) => {
   const {
@@ -9,9 +8,9 @@ export const getAddressesByUserId = async (req, res) => {
   } = req;
 
   try {
-    if (hasPaginationParams(page, limit)) {
+    if (checkPaginationParams(page, limit)) {
       const addresses = await Address.find({ userId })
-        .select(["-createdAt", "-updatedAt", "-__v", "-userId"])
+        .select(["-__v", "-userId"])
         .sort({ name: 1 })
         .skip((page - 1) * limit)
         .limit(limit);
@@ -56,12 +55,8 @@ export const deleteAddressById = async (req, res) => {
   } = req;
 
   try {
-    if (await addressExists(id)) {
-      await Address.findByIdAndDelete(id);
-      res.status(200).json({ message: "Address deleted" });
-    } else {
-      throw new Error("There isn't an address with this id");
-    }
+    await Address.findByIdAndDelete(id);
+    res.status(200).json({ message: "Address deleted" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -83,14 +78,8 @@ export const updateAddressById = async (req, res) => {
       postcode,
       phone,
     };
-    if ((await addressExists(id)) && hasUpdateProps(address)) {
-      await Address.findByIdAndUpdate(id, address);
-      res.status(200).json({ message: "Address updated" });
-    } else {
-      throw new Error(
-        "Address update requires: name, country, city, street, houseNumber, postcode, phone"
-      );
-    }
+    await Address.findByIdAndUpdate(id, address, { runValidators: true });
+    res.status(200).json({ message: "Address updated" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

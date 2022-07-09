@@ -11,11 +11,11 @@ const checkLimit = (limit) => {
   return !Number.isNaN(limitAsNumber) && limitAsNumber > 0;
 };
 
-export const hasPaginationParams = (page, limit) => {
+export const checkPaginationParams = (page, limit) => {
   return checkPage(page) && checkLimit(limit);
 };
 
-export const getAPIPath = (path) => {
+export const convertBackslashesToSlashes = (path) => {
   const defaultPath = join(sep, "api", path);
   return defaultPath.replace(/\\/g, "/");
 };
@@ -40,16 +40,8 @@ export const unlinkImage = (path, pathType = "fs") => {
   }
 };
 
-export const hasUpdateProp = (prop) => {
-  return typeof prop !== "undefined";
-};
-
-export const hasUpdateProps = (object) => {
-  const props = Object.keys(object);
-  const results = props.map((prop) => {
-    return hasUpdateProp(object[prop]);
+export const unlinkFile = (path) => {
+  unlink(path, (error) => {
+    if (error) console.log(error);
   });
-
-  if (!results.includes(false)) return true;
-  else return false;
 };

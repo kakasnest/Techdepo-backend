@@ -1,18 +1,4 @@
-import mongoose from "mongoose";
-const {
-  Types: { ObjectId },
-} = mongoose;
-
-import Product from "../models/product.js";
-
-export const productExists = async (id) => {
-  const isValidId = ObjectId.isValid(id);
-  try {
-    return isValidId ? null !== (await Product.exists({ _id: id })) : false;
-  } catch (err) {
-    console.log(err.message);
-  }
-};
+import Product from "../../models/product.js";
 
 export const productRating = (id) => {
   return [

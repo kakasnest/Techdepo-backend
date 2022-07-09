@@ -1,11 +1,7 @@
 import Category from "../models/category.js";
-import { categoryExists } from "../utils/category.js";
-import {
-  getAPIPath,
-  hasUpdateProp,
-  hasUpdateProps,
-  unlinkImage,
-} from "../utils/general.js";
+import { convertBackslashesToSlashes } from "../utils/controller_related/general.js";
+import { generalPlaceholderPath } from "../utils/database_related/defaultPathsForImages.js";
+import { hasUpdateProps, unlinkImage } from "../utils/general.js";
 
 export const getCategories = async (req, res) => {
   try {
@@ -25,7 +21,7 @@ export const createCategory = async (req, res) => {
   try {
     if (file) {
       const { path } = file;
-      const image = getAPIPath(path);
+      const image = convertBackslashesToSlashes(path);
       await Category.create({ name, image });
     } else {
       await Category.create({ name });
@@ -46,11 +42,9 @@ export const deleteCategoryById = async (req, res) => {
   } = req;
 
   try {
-    if (await categoryExists(id)) {
-      const { image } = await Category.findByIdAndDelete(id);
-      unlinkImage(image, "db");
-      res.status(200).json({ message: "Category deleted" });
-    }
+    const { image } = await Category.findByIdAndDelete(id);
+    unlinkImage(image, "db");
+    res.status(200).json({ message: "Category deleted" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -64,25 +58,22 @@ export const updateCategoryById = async (req, res) => {
   } = req;
 
   try {
-    if (await categoryExists(id)) {
-      if (hasUpdateProps({ file, name })) {
-        const { path } = file;
-        const image = getAPIPath(path);
-        const { image: oldImage } = await Category.findByIdAndUpdate(id, {
-          image,
-          name,
-        });
-        unlinkImage(oldImage, "db");
-        res.status(200).json({ message: "Category updated" });
-      } else if (hasUpdateProp(name)) {
-        await Category.findByIdAndUpdate(id, { name });
-        res.status(200).json({ message: "Category updated" });
-      } else {
-        throw new Error("No data provided for category update");
-      }
+    if (file) {
+      const { path } = file;
+      const image = convertBackslashesToSlashes(path);
+      const { image: oldImage } = await Category.findByIdAndUpdate(
+        id,
+        { name, image },
+        {
+          runValidators: true,
+        }
+      );
+      unlinkImage(oldImage, "db");
     } else {
-      throw new Error("There isn't a category with this id");
+      await Category.findByIdAndUpdate(id, { name });
     }
+
+    res.status(200).json({ message: "Category updated" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -94,17 +85,11 @@ export const resetCategoryImageById = async (req, res) => {
   } = req;
 
   try {
-    if (await categoryExists(id)) {
-      const { image: oldImage } = await Category.findByIdAndUpdate(id, {
-        image: "/api/images/default/placeholder.png",
-      });
-      unlinkImage(oldImage, "db");
-      res
-        .status(200)
-        .json({ message: "Category has been reset using default image" });
-    } else {
-      throw new Error("There isn't a category with this id");
-    }
+    const { image: oldImage } = await Category.findByIdAndUpdate(id, {
+      image: generalPlaceholderPath,
+    });
+    unlinkImage(oldImage, "db");
+    res.status(200).json({ message: "Category image reset" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

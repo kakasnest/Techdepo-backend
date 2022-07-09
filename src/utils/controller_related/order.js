@@ -1,18 +1,4 @@
-import mongoose from "mongoose";
-const {
-  Types: { ObjectId },
-} = mongoose;
-
-import Order from "../models/order.js";
-
-export const orderExists = async (id) => {
-  const isValidId = ObjectId.isValid(id);
-  try {
-    return isValidId ? null !== (await Order.exists({ _id: id })) : false;
-  } catch (err) {
-    console.log(err.message);
-  }
-};
+import Order from "../../models/order.js";
 
 export const orderLinesByOrderId = (id) => {
   return [

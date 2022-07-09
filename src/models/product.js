@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { generalPlaceholderPath } from "../utils/database_related/defaultPathsForImages";
 
 const { Schema } = mongoose;
 const productSchema = new Schema(
@@ -16,11 +17,11 @@ const productSchema = new Schema(
     },
     images: {
       type: [String],
-      default: ["/api/images/default/placeholder.png"],
+      default: [generalPlaceholderPath],
     },
     thumbnail: {
       type: String,
-      default: "/api/images/default/placeholder.png",
+      default: generalPlaceholderPath,
     },
     stock: {
       type: Number,
@@ -51,7 +52,6 @@ const productSchema = new Schema(
     isActive: {
       type: Boolean,
       default: false,
-      select: false,
     },
   },
   {
