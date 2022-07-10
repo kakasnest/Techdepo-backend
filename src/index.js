@@ -4,9 +4,9 @@ import cookieParser from "cookie-parser";
 import helmet from "helmet";
 
 import api from "./routes/api.js";
-import connectToMongoDB from "./utils/databaseConnection.js";
-import { send } from "./utils/nodemailer.js";
-import { welcome } from "./templates/index.js";
+import connectToMongoDB from "./utils/database_related/databaseConnection.js";
+// import { send } from "./utils/nodemailer.js";
+// import { welcome } from "./templates/index.js";
 
 //Database connection setup
 connectToMongoDB();

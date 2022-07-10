@@ -1,4 +1,4 @@
-import { join, sep } from "path";
+import { sep, join, dirname } from "path";
 import { unlink } from "fs";
 
 const checkPage = (page) => {
@@ -15,33 +15,22 @@ export const checkPaginationParams = (page, limit) => {
   return checkPage(page) && checkLimit(limit);
 };
 
-export const convertBackslashesToSlashes = (path) => {
-  const defaultPath = join(sep, "api", path);
-  return defaultPath.replace(/\\/g, "/");
-};
-
 const isDefaultDir = (path) => {
-  const dir = path.split("/").at(3);
+  const dir = path.split(sep).at(-2);
   return dir === "default";
 };
 
-export const unlinkImage = (path, pathType = "fs") => {
-  if (!isDefaultDir(path)) {
-    if (pathType === "fs") {
-      unlink(path, (unlinkError) => {
-        if (unlinkError) console.log(unlinkError);
-      });
-    } else if (pathType === "db") {
-      const filePath = path.split("/").slice(2).join(sep);
-      unlink(filePath, (unlinkError) => {
-        if (unlinkError) console.log(unlinkError);
-      });
-    }
-  }
-};
+export const unlinkImage = (path) => {
+  if (isDefaultDir(path)) return;
 
-export const unlinkFile = (path) => {
-  unlink(path, (error) => {
+  //Remove /api from image path
+  const pathToImage = join(dirname("."), path.substring(4));
+
+  unlink(pathToImage, (error) => {
     if (error) console.log(error);
   });
+};
+
+export const createAPIPath = (path) => {
+  return `${sep}api${sep}${path}`;
 };

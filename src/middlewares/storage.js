@@ -9,7 +9,7 @@ const storage = multer.diskStorage({
     const filePath = join(dirname("."), "images", fieldname);
     access(filePath, (error) => {
       if (error) {
-        mkdir(filePath, () => {
+        mkdir(filePath, (error) => {
           next(null, filePath);
         });
       } else {

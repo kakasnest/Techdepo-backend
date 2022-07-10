@@ -1,7 +1,5 @@
 import Review from "../models/review.js";
-import { hasPaginationParams, hasUpdateProps } from "../utils/general.js";
-import { productExists } from "../utils/product.js";
-import { reviewExists } from "../utils/review.js";
+import { checkPaginationParams } from "../utils/controller_related/general.js";
 
 export const getReviewsByUserId = async (req, res) => {
   const {

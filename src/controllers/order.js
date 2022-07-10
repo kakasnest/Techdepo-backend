@@ -1,14 +1,13 @@
 import Order from "../models/order.js";
 import OrderLine from "../models/orderLine.js";
-import { hasPaginationParams } from "../utils/general.js";
+import { checkPaginationParams } from "../utils/controller_related/general.js";
 import {
   alreadyInLines,
   hasLines,
   isValidQuantity,
   orderLinesByOrderId,
   updateLine,
-} from "../utils/order.js";
-import { productExists } from "../utils/product.js";
+} from "../utils/controller_related/order.js";
 
 export const getOrderById = async (req, res) => {
   const {

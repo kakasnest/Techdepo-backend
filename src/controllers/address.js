@@ -1,5 +1,5 @@
 import Address from "../models/address.js";
-import { checkPaginationParams } from "../utils/general.js";
+import { checkPaginationParams } from "../utils/controller_related/general.js";
 
 export const getAddressesByUserId = async (req, res) => {
   const {

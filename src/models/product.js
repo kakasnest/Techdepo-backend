@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { generalPlaceholderPath } from "../utils/database_related/defaultPathsForImages";
+import { generalPlaceholderPath } from "../utils/database_related/defaultImagePaths.js";
 
 const { Schema } = mongoose;
 const productSchema = new Schema(

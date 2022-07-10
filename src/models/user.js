@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { profilePlaceholderPath } from "../utils/database_related/defaultPathsForImages";
+import { profilePlaceholderPath } from "../utils/database_related/defaultImagePaths.js";
 
 const { Schema } = mongoose;
 const userSchema = new Schema(

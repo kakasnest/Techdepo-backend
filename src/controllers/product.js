@@ -4,14 +4,8 @@ import { unlink } from "fs";
 import Product from "../models/product.js";
 import Review from "../models/review.js";
 import Category from "../models/category.js";
-import { productRating } from "../utils/product.js";
-import {
-  alreadyInValidCategories,
-  categoryExists,
-  hasCategories,
-  hasOneCategory,
-} from "../utils/category.js";
-import { getAPIPath, hasPaginationParams } from "../utils/general.js";
+import { productRating } from "../utils/controller_related/product.js";
+import { checkPaginationParams } from "../utils/controller_related/general.js";
 
 export const getProductById = async (req, res) => {
   const {
