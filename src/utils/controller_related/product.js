@@ -1,5 +1,3 @@
-import Product from "../../models/product.js";
-
 export const productRating = (id) => {
   return [
     {

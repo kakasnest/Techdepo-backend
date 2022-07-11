@@ -6,7 +6,7 @@ const storage = multer.diskStorage({
   destination: (req, file, next) => {
     const { fieldname } = file;
 
-    const filePath = join(dirname("."), "images", fieldname);
+    const filePath = join("images", fieldname);
     access(filePath, (error) => {
       if (error) {
         mkdir(filePath, (error) => {

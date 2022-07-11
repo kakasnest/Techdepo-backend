@@ -1,9 +1,6 @@
 import Category from "../models/category.js";
 import { generalPlaceholderPath } from "../utils/database_related/defaultImagePaths.js";
-import {
-  createAPIPath,
-  unlinkImage,
-} from "../utils/controller_related/general.js";
+import { createAPIPath } from "../utils/controller_related/general.js";
 
 export const getCategories = async (req, res) => {
   try {
@@ -40,8 +37,7 @@ export const deleteCategoryById = async (req, res) => {
   } = req;
 
   try {
-    const { image } = await Category.findByIdAndDelete(id);
-    unlinkImage(image);
+    await Category.findByIdAndDelete(id);
     res.status(200).json({ message: "Category deleted" });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -51,20 +47,23 @@ export const deleteCategoryById = async (req, res) => {
 export const updateCategoryById = async (req, res) => {
   const {
     params: { id },
-    file: { path },
+    file,
+    body: { name },
   } = req;
 
   try {
-    if (path) {
+    if (file) {
+      const { path } = file;
       const image = createAPIPath(path);
-      const { image: oldImage } = await Category.findByIdAndUpdate(
+      await Category.findByIdAndUpdate(
         id,
-        { image: image },
+        { image, name },
         {
           runValidators: true,
         }
       );
-      unlinkImage(oldImage);
+    } else {
+      await Category.findByIdAndUpdate(id, { name }, { runValidators: true });
     }
     res.status(200).json({ message: "Category updated" });
   } catch (err) {
@@ -78,10 +77,9 @@ export const resetCategoryImageById = async (req, res) => {
   } = req;
 
   try {
-    const { image } = await Category.findByIdAndUpdate(id, {
+    await Category.findByIdAndUpdate(id, {
       image: generalPlaceholderPath,
     });
-    unlinkImage(image);
     res.status(200).json({ message: "Category image reset" });
   } catch (err) {
     res.status(500).json({ message: err.message });
