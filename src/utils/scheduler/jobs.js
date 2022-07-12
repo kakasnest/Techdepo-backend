@@ -67,11 +67,31 @@ export const deleteReviewsWithoutProductId = async () => {
     const reviewsToDelete = [];
     for (let i = 0; i < reviews.length; i++) {
       const { productId, _id } = reviews[i];
-      const product = await Product.find({ _id: productId });
-      if (product.length === 0) reviewsToDelete.push(_id);
+      const product = await Product.findById(productId);
+      console.log(product);
+      if (product === null) reviewsToDelete.push(_id);
     }
     await Review.deleteMany({
       _id: { $in: reviewsToDelete },
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const deleteInvalidOrderLines = async () => {
+  try {
+    const orderLines = await OrderLine.find().select("productId");
+    const orderLinesToDelete = [];
+    for (let i = 0; i < orderLines.length; i++) {
+      const { _id, productId } = orderLines[i];
+      const product = await Product.findById(productId).select("+isActive");
+      console.log(product);
+      if (product !== null && product.isActive === false)
+        orderLinesToDelete.push(_id);
+    }
+    await OrderLine.deleteMany({
+      _id: { $in: orderLinesToDelete },
     });
   } catch (error) {
     console.log(error);

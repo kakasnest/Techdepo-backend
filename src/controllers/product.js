@@ -12,7 +12,7 @@ export const getProductById = async (req, res) => {
   } = req;
 
   try {
-    const product = await Product.findOne({ _id: id, isActive: true }).select([
+    const product = await Product.findById(id).select([
       "-createdAt",
       "-updatedAt",
       "-__v",
