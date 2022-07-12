@@ -57,7 +57,9 @@ export const logout = async (req, res) => {
     res.clearCookie("auth");
     res
       .status(200)
-      .json({ message: "Auth cookie has been cleared from the browser" });
+      .json({
+        message: 'Cookie named "auth" has been cleared from the browser',
+      });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

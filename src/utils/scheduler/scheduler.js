@@ -1,11 +1,13 @@
 import cron from "node-cron";
 import {
+  deleteOrdersWithoutLines,
   deleteUnusedCategoryImages,
   deleteUnusedProductImages,
 } from "./jobs.js";
 
 export const startJobs = () => {
-  cron.schedule("* 23 * * *", deleteUnusedProductImages);
-  cron.schedule("* 23 * * *", deleteUnusedCategoryImages);
+  cron.schedule("* * * * *", deleteUnusedCategoryImages);
+  cron.schedule("* * * * *", deleteOrdersWithoutLines);
+  cron.schedule("* * * * *", deleteUnusedProductImages);
   console.log("Jobs started");
 };

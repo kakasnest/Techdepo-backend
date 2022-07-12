@@ -1,13 +1,7 @@
 import Order from "../models/order.js";
 import OrderLine from "../models/orderLine.js";
 import { checkPaginationParams } from "../utils/controller_related/general.js";
-import {
-  alreadyInLines,
-  hasLines,
-  isValidQuantity,
-  orderLinesByOrderId,
-  updateLine,
-} from "../utils/controller_related/order.js";
+import { orderLinesByOrderId } from "../utils/controller_related/order.js";
 
 export const getOrderById = async (req, res) => {
   const {
@@ -30,7 +24,7 @@ export const getOrdersByUserId = async (req, res) => {
   } = req;
 
   try {
-    if (hasPaginationParams(page, limit)) {
+    if (checkPaginationParams(page, limit)) {
       const orders = await Order.find({ userId })
         .select(["state", "createdAt"])
         .sort({ _id: 1 })
@@ -59,34 +53,13 @@ export const createOrder = async (req, res) => {
   } = req;
 
   try {
-    if (hasLines(orderLines)) {
-      const lines = [];
-      for (let i = 0; i < orderLines.length; i++) {
-        const { productId, quantity } = orderLines[i];
-        if ((await productExists(productId)) && isValidQuantity(quantity)) {
-          if (alreadyInLines(lines, productId))
-            updateLine(lines, productId, quantity);
-          else lines.push({ productId, quantity });
-        }
-      }
-      if (lines.length > 0) {
-        const { id: orderId } = await Order.create({ userId });
-        for (let i = 0; i < lines.length; i++) {
-          const { productId, quantity } = lines[i];
-          lines[i] = { productId, quantity, orderId };
-        }
-        await OrderLine.insertMany(lines);
-        res.status(200).json({ message: "Order created" });
-      } else {
-        throw new Error(
-          "OrderLines must contain valid productIds and quantities"
-        );
-      }
-    } else {
-      throw new Error(
-        "Field orderLines is required and must be an array of objects containing productIds and quantities"
-      );
+    const lines = [];
+    const { id: orderId } = await Order.create({ userId });
+    for (let i = 0; i < orderLines.length; i++) {
+      lines[i] = { ...orderLines[i], orderId };
     }
+    await OrderLine.insertMany(lines);
+    res.status(200).json({ message: "Order created" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
