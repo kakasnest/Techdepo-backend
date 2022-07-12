@@ -1,11 +1,10 @@
-import { join, sep, dirname } from "path";
-import { unlink } from "fs";
-
 import Product from "../models/product.js";
 import Review from "../models/review.js";
-import Category from "../models/category.js";
 import { productRating } from "../utils/controller_related/product.js";
-import { checkPaginationParams } from "../utils/controller_related/general.js";
+import {
+  checkPaginationParams,
+  createAPIPath,
+} from "../utils/controller_related/general.js";
 
 export const getProductById = async (req, res) => {
   const {
@@ -34,7 +33,7 @@ export const getProductsByCategoryId = async (req, res) => {
   } = req;
 
   try {
-    if (hasPaginationParams(page, limit)) {
+    if (checkPaginationParams(page, limit)) {
       const products = await Product.find({
         categories: categoryId,
         isActive: true,
@@ -77,32 +76,17 @@ export const createProduct = async (req, res) => {
   } = req;
 
   try {
-    const validCategories = [];
-    if (hasCategories(categories)) {
-      for (let i = 0; i < categories.length; i++) {
-        const category = categories[i];
-        if (await categoryExists(category)) {
-          if (!alreadyInValidCategories(validCategories, category))
-            validCategories.push(category);
-        }
-      }
-    } else if (hasOneCategory(categories)) {
-      if (await categoryExists(categories)) {
-        validCategories.push(categories);
-      }
-    }
-
     const product = {
       name,
       description,
       stock,
       price,
-      categories: validCategories,
+      categories,
       isActive,
     };
     if (files.length > 0) {
       const images = files.map(({ path }) => {
-        return getAPIPath(path);
+        return createAPIPath(path);
       });
       product.images = images;
       product.thumbnail = images[0];
@@ -120,67 +104,28 @@ export const updateProductById = async (req, res) => {
     files,
     params: { id },
   } = req;
-  const productBaseCondition = name || description || categories || isActive;
-  const stockCondition =
-    stock && Number.isInteger(parseInt(stock)) && parseInt(stock) >= 0;
-  const priceCondition =
-    price && !Number.isNaN(parseInt(price)) && parseInt(price) >= 0;
-  const categoriesCondition =
-    categories && Array.isArray(categories) && categories.length > 0;
 
   try {
-    const validCategories = [];
-    if (categoriesCondition)
-      for (let i = 0; i < categories.length; i++) {
-        const categoryId = categories[i];
-        if (isValidObjectId(categoryId)) {
-          const isValidCategory = await Category.exists({ _id: categoryId });
-          if (isValidCategory) validCategories.push(categoryId);
-        }
-      }
     const product = {
       name,
       description,
-      categories: validCategories,
+      categories,
       isActive,
+      stock,
+      price,
     };
-    if (priceCondition) product.price = price;
-    if (stockCondition) product.stock = stock;
-    if (productBaseCondition) {
-      if (files.length > 0) {
-        const newImages = files.map((f) => {
-          const defaultPath = join(sep, "api", f.path);
-          const image = defaultPath.replaceAll("\\", "/");
-          return image;
-        });
-        const { images } = await Product.findById(id);
-        if (
-          !(
-            images.length === 1 &&
-            images.includes("/api/images/default/placeholder.png")
-          )
-        ) {
-          for (let i = 0; i < images.length; i++) {
-            const filename = images[i].split("/").pop();
-            const filePath = join(
-              dirname("."),
-              "images",
-              "product_images",
-              filename
-            );
-            unlink(filePath, (error) => {
-              if (error) console.log(error);
-            });
-          }
-        }
-        product.images = newImages;
-        product.thumbnail = newImages[0];
+    if (files.length > 0) {
+      const images = [];
+      for (let i = 0; i < files.length; i++) {
+        const { path } = files[i];
+        const image = createAPIPath(path);
+        images.push(image);
       }
-      await Product.findByIdAndUpdate(id, product);
-      res.status(200).json({ message: "Product updated" });
-    } else {
-      res.status(500).json({ message: "No data provided for category update" });
+      product.images = images;
+      product.thumbnail = images[0];
     }
+    await Product.findByIdAndUpdate(id, product);
+    res.status(200).json({ message: "Product updated" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -192,35 +137,13 @@ export const resetProductImagesById = async (req, res) => {
   } = req;
 
   try {
-    const { images } = await Product.findById(id);
-    if (
-      images.length === 1 &&
-      images.includes("/api/images/default/placeholder.png")
-    ) {
-      res
-        .status(500)
-        .json({ message: "Product has been already set with default image" });
-    } else {
-      for (let i = 0; i < images.length; i++) {
-        const filename = images[i].split("/").pop();
-        const filePath = join(
-          dirname("."),
-          "images",
-          "product_images",
-          filename
-        );
-        unlink(filePath, (error) => {
-          if (error) console.log(error);
-        });
-      }
-      await Product.findByIdAndUpdate(id, {
-        images: ["/api/images/default/placeholder.png"],
-        thumbnail: "/api/images/default/placeholder.png",
-      });
-      res.status(200).json({
-        message: "Product images have been reset using default image",
-      });
-    }
+    await Product.findByIdAndUpdate(id, {
+      images: ["/api/images/default/placeholder.png"],
+      thumbnail: "/api/images/default/placeholder.png",
+    });
+    res.status(200).json({
+      message: "Product images have been reset using default image",
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
