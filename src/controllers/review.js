@@ -8,7 +8,7 @@ export const getReviewsByUserId = async (req, res) => {
   } = req;
 
   try {
-    if (hasPaginationParams(page, limit)) {
+    if (checkPaginationParams(page, limit)) {
       const reviews = await Review.find({ userId })
         .select(["-__v", "-userId"])
         .populate({
@@ -36,7 +36,7 @@ export const getReviewsByProductId = async (req, res) => {
   } = req;
 
   try {
-    if (hasPaginationParams(page, limit)) {
+    if (checkPaginationParams(page, limit)) {
       const reviews = await Review.find({ productId })
         .select(["-__v", "-productId"])
         .populate({
@@ -65,13 +65,9 @@ export const createReview = async (req, res) => {
   } = req;
 
   try {
-    if (await productExists(productId)) {
-      const review = { text, rating, userId, productId };
-      await Review.create(review);
-      res.status(200).json({ message: "Review created" });
-    } else {
-      throw new Error("There isn't a product with this id");
-    }
+    const review = { text, rating, userId, productId };
+    await Review.create(review);
+    res.status(200).json({ message: "Review created" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -83,12 +79,8 @@ export const deleteReviewById = async (req, res) => {
   } = req;
 
   try {
-    if (await reviewExists(id)) {
-      await Review.findByIdAndDelete(id);
-      res.status(200).json({ message: "Review deleted" });
-    } else {
-      throw new Error("There isn't a review with this id");
-    }
+    await Review.findByIdAndDelete(id);
+    res.status(200).json({ message: "Review deleted" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -101,17 +93,9 @@ export const updateReviewById = async (req, res) => {
   } = req;
 
   try {
-    if (await reviewExists(id)) {
-      const review = { text, rating };
-      if (hasUpdateProps(review)) {
-        await Review.findByIdAndUpdate(id, review, { runValidators: true });
-        res.status(200).json({ message: "Review updated" });
-      } else {
-        throw new Error("Rating and text are required for review update");
-      }
-    } else {
-      throw new Error("There isn't a review with this id");
-    }
+    const review = { text, rating };
+    await Review.findByIdAndUpdate(id, review, { runValidators: true });
+    res.status(200).json({ message: "Review updated" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
