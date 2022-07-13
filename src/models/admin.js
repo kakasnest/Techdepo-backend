@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { profilePlaceholderPath } from "../utils/database_related/defaultPathsForImages";
+import { profilePlaceholderPath } from "../utils/database_related/defaultImagePaths.js";
 
 const { Schema } = mongoose;
 const adminSchema = new Schema(
@@ -23,7 +23,6 @@ const adminSchema = new Schema(
   },
   {
     collection: "admins",
-    timestamps: true,
   }
 );
 

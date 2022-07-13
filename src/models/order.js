@@ -15,6 +15,11 @@ const orderSchema = new Schema(
       ref: "User",
       index: true,
     },
+    orderLines: {
+      type: [Schema.Types.ObjectId],
+      ref: "OrderLine",
+      required: [true, "An order requires at least one order line."],
+    },
   },
   {
     collection: "orders",

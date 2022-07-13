@@ -1,3 +1,7 @@
+import mongoose from "mongoose";
+
+const { ObjectId } = mongoose.Types;
+
 export const productRating = (id) => {
   return [
     {

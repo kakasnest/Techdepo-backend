@@ -19,9 +19,9 @@ export const getProductById = async (req, res) => {
       "-thumbnail",
       "-categories",
     ]);
-    const ratingDataAsArray = await Review.aggregate(productRating(id));
-    const { rating, ratingCount } = ratingDataAsArray[0];
-    res.status(200).json({ ...product.toObject(), rating, ratingCount });
+    const ratingData = await Review.aggregate(productRating(id));
+    const rating = ratingData;
+    res.status(200).json({ ...product.toObject(), ...rating[0] });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

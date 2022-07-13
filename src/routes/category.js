@@ -7,17 +7,19 @@ import {
   resetCategoryImageById,
   updateCategoryById,
 } from "../controllers/category.js";
-import auth from "../middlewares/auth.js";
+import adminAuth from "../middlewares/adminAuth.js";
 import { upload } from "../middlewares/storage.js";
 
 const router = Router();
 
 router.route("/").get(getCategories);
-router.route("/").post(auth, upload.single("category_images"), createCategory);
-router.route("/:id").delete(deleteCategoryById);
+router
+  .route("/")
+  .post(adminAuth, upload.single("category_images"), createCategory);
+router.route("/:id").delete(adminAuth, deleteCategoryById);
 router
   .route("/:id")
-  .put(auth, upload.single("category_images"), updateCategoryById);
-router.route("/:id").patch(resetCategoryImageById);
+  .put(adminAuth, upload.single("category_images"), updateCategoryById);
+router.route("/:id").patch(adminAuth, resetCategoryImageById);
 
 export default router;

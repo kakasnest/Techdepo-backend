@@ -22,16 +22,9 @@ const orderLineSchema = new Schema(
       },
       required: [true, "Quantity of the ordered product is required"],
     },
-    orderId: {
-      type: Schema.Types.ObjectId,
-      required: true,
-      ref: "Order",
-      index: true,
-    },
   },
   {
     collection: "orderLines",
-    timestamps: true,
   }
 );
 

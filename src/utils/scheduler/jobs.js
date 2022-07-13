@@ -3,8 +3,6 @@ import { join, sep } from "path";
 import { readdir, unlink } from "fs/promises";
 import { cwd } from "process";
 import Product from "../../models/product.js";
-import Order from "../../models/order.js";
-import OrderLine from "../../models/orderLine.js";
 import Review from "../../models/review.js";
 
 const removeImages = async (array, dirName) => {
@@ -44,23 +42,6 @@ export const deleteUnusedCategoryImages = async () => {
   }
 };
 
-export const deleteOrdersWithoutLines = async () => {
-  try {
-    const orders = await Order.find().select("_id");
-    const ordersToDelete = [];
-    for (let i = 0; i < orders.length; i++) {
-      const { _id: orderId } = orders[i];
-      const lines = await OrderLine.find({ orderId });
-      if (lines.length === 0) ordersToDelete.push(orderId);
-    }
-    await Order.deleteMany({
-      _id: { $in: ordersToDelete },
-    });
-  } catch (error) {
-    console.log(error);
-  }
-};
-
 export const deleteReviewsWithoutProductId = async () => {
   try {
     const reviews = await Review.find().select("productId");
@@ -73,25 +54,6 @@ export const deleteReviewsWithoutProductId = async () => {
     }
     await Review.deleteMany({
       _id: { $in: reviewsToDelete },
-    });
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-export const deleteInvalidOrderLines = async () => {
-  try {
-    const orderLines = await OrderLine.find().select("productId");
-    const orderLinesToDelete = [];
-    for (let i = 0; i < orderLines.length; i++) {
-      const { _id, productId } = orderLines[i];
-      const product = await Product.findById(productId).select("+isActive");
-      console.log(product);
-      if (product !== null && product.isActive === false)
-        orderLinesToDelete.push(_id);
-    }
-    await OrderLine.deleteMany({
-      _id: { $in: orderLinesToDelete },
     });
   } catch (error) {
     console.log(error);
