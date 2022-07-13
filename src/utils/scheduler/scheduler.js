@@ -6,8 +6,9 @@ import {
 } from "./jobs.js";
 
 export const startJobs = () => {
-  cron.schedule("* * * * 7", deleteUnusedCategoryImages);
-  cron.schedule("* * * * 7", deleteUnusedProductImages);
-  cron.schedule("* * * * 7", deleteReviewsWithoutProductId);
+  const timer = "0 4 * * 7";
+  cron.schedule(timer, deleteUnusedCategoryImages);
+  cron.schedule(timer, deleteUnusedProductImages);
+  cron.schedule(timer, deleteReviewsWithoutProductId);
   console.log("Jobs started");
 };
