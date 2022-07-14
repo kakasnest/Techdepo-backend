@@ -20,8 +20,6 @@ const categorySchema = new Schema(
   }
 );
 
-categorySchema.set("toJSON", { virtuals: true });
-
 const Category = mongoose.model("Category", categorySchema);
 
 export default Category;

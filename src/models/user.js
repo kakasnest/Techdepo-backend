@@ -41,18 +41,6 @@ const userSchema = new Schema(
   }
 );
 
-userSchema.virtual("fullNameENG").get(function () {
-  if (this.firstName && this.lastName)
-    return this.firstName + " " + this.lastName;
-  return "";
-});
-userSchema.virtual("fullNameHUN").get(function () {
-  if (this.firstName && this.lastName)
-    return this.lastName + " " + this.firstName;
-  return "";
-});
-userSchema.set("toJSON", { virtuals: true });
-
 const User = mongoose.model("User", userSchema);
 
 export default User;

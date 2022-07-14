@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import Product from "../../models/product.js";
 
 const { ObjectId } = mongoose.Types;
 
@@ -33,4 +34,15 @@ export const productRating = (id) => {
       },
     },
   ];
+};
+
+export const isProductAvailable = async (productId) => {
+  const product = await Product.exists({ _id: productId, isActive: true });
+  if (product === null) return false;
+
+  return true;
+};
+
+export const isQuantityValid = (quantity) => {
+  return Number.isInteger(quantity) && quantity > 0;
 };

@@ -30,6 +30,12 @@ const reviewSchema = new Schema(
     productId: {
       type: Schema.Types.ObjectId,
       ref: "Product",
+      validate: {
+        validator: async function (v) {
+          return await isProductAvailable(v);
+        },
+        message: "A valid productId is required",
+      },
       required: [
         true,
         "At least one ProductId is required to create a valid review",
@@ -42,8 +48,6 @@ const reviewSchema = new Schema(
     timestamps: true,
   }
 );
-
-reviewSchema.set("toJSON", { virtuals: true });
 
 const Review = mongoose.model("Review", reviewSchema);
 

@@ -3,7 +3,6 @@ import { join, sep } from "path";
 import { readdir, unlink } from "fs/promises";
 import { cwd } from "process";
 import Product from "../../models/product.js";
-import Review from "../../models/review.js";
 
 const removeImages = async (array, dirName) => {
   try {
@@ -26,7 +25,7 @@ const removeImages = async (array, dirName) => {
 
 export const deleteUnusedProductImages = async () => {
   try {
-    const products = await Product.find().select("images");
+    const products = await Product.find().select("images").lean();
     removeImages(products, "product_images");
   } catch (error) {
     console.log(error);
@@ -35,26 +34,8 @@ export const deleteUnusedProductImages = async () => {
 
 export const deleteUnusedCategoryImages = async () => {
   try {
-    const categories = await Category.find().select("image");
+    const categories = await Category.find().select("image").lean();
     removeImages(categories, "category_images");
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-export const deleteReviewsWithoutProductId = async () => {
-  try {
-    const reviews = await Review.find().select("productId");
-    const reviewsToDelete = [];
-    for (let i = 0; i < reviews.length; i++) {
-      const { productId, _id } = reviews[i];
-      const product = await Product.findById(productId);
-      console.log(product);
-      if (product === null) reviewsToDelete.push(_id);
-    }
-    await Review.deleteMany({
-      _id: { $in: reviewsToDelete },
-    });
   } catch (error) {
     console.log(error);
   }
