@@ -2,30 +2,6 @@ import Order from "../models/order.js";
 import OrderLine from "../models/orderLine.js";
 import { checkPaginationParams } from "../utils/controller_related/general.js";
 
-export const getOrderById = async (req, res) => {
-  const {
-    params: { id },
-  } = req;
-
-  try {
-    const order = await Order.findById(id)
-      .select(["state", "userId"])
-      .populate({
-        path: "orderLines",
-        model: "OrderLine",
-        select: ["quantity", "productId", "createdAt", "updatedAt"],
-        populate: {
-          path: "productId",
-          model: "Product",
-          select: ["name", "thumbnail", "price"],
-        },
-      });
-    res.status(200).json(order);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
-
 export const getOrdersByUserId = async (req, res) => {
   const {
     userId,
