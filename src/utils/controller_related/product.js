@@ -43,6 +43,10 @@ export const isProductAvailable = async (productId) => {
   return true;
 };
 
-export const isQuantityValid = (quantity) => {
-  return Number.isInteger(quantity) && quantity > 0;
+export const isStockValid = (stock) => {
+  Number.isInteger(stock) && stock >= 0 && Number.isFinite(stock);
+};
+
+export const isPriceValid = (price) => {
+  return price >= 0 && typeof price === "number" && Number.isFinite(price);
 };

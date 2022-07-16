@@ -1,4 +1,8 @@
 import mongoose from "mongoose";
+import {
+  isPriceValid,
+  isStockValid,
+} from "../utils/controller_related/product.js";
 import { generalPlaceholderPath } from "../utils/database_related/defaultImagePaths.js";
 
 const { Schema } = mongoose;
@@ -26,9 +30,7 @@ const productSchema = new Schema(
     stock: {
       type: Number,
       validate: {
-        validator: function (v) {
-          return Number.isInteger(v) && !(v < 0);
-        },
+        validator: isStockValid,
         message:
           "The number of product in stock must be greater than or equal to zero",
       },
@@ -37,9 +39,7 @@ const productSchema = new Schema(
     price: {
       type: Number,
       validate: {
-        validator: function (v) {
-          return !(v < 0);
-        },
+        validator: isPriceValid,
         message: "Price of product must be greater than or equal to zero",
       },
       default: 0,

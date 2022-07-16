@@ -1,8 +1,6 @@
 import mongoose from "mongoose";
-import {
-  isProductAvailable,
-  isQuantityValid,
-} from "../utils/controller_related/product.js";
+import { isQuantityValid } from "../utils/controller_related/order.js";
+import { isProductAvailable } from "../utils/controller_related/product.js";
 
 const { Schema } = mongoose;
 const orderLineSchema = new Schema(
@@ -11,9 +9,7 @@ const orderLineSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "Product",
       validate: {
-        validator: async function (v) {
-          return await isProductAvailable(v);
-        },
+        validator: isProductAvailable,
         message: "A valid productId is required in each order line",
       },
       required: [true, "A valid productId is required in each order line"],
@@ -21,9 +17,8 @@ const orderLineSchema = new Schema(
     quantity: {
       type: Number,
       validate: {
-        validator: function (v) {
-          return isQuantityValid(v);
-        },
+        validator: isQuantityValid,
+
         message:
           "Quantity of the ordered product must be a positive integer greater than zero",
       },
