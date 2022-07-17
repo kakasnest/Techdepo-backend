@@ -1,4 +1,6 @@
 import mongoose from "mongoose";
+import { isProductAvailable } from "../utils/controller_related/product.js";
+import { isRatingValid } from "../utils/controller_related/reviews.js";
 
 const { Schema } = mongoose;
 const reviewSchema = new Schema(
@@ -12,9 +14,7 @@ const reviewSchema = new Schema(
       type: Number,
       required: [true, "Rating of the product is required"],
       validate: {
-        validator: function (v) {
-          return Number.isInteger(v) && !(v < 1) && !(v > 5);
-        },
+        validator: isRatingValid,
         message: "Rating of the review must be an integer between 1 and 5",
       },
     },
@@ -31,9 +31,8 @@ const reviewSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "Product",
       validate: {
-        validator: async function (v) {
-          return await isProductAvailable(v);
-        },
+        validator: isProductAvailable,
+
         message: "A valid productId is required",
       },
       required: [

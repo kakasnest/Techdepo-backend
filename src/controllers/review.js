@@ -18,7 +18,8 @@ export const getReviewsByUserId = async (req, res) => {
         })
         .sort({ createdAt: -1 })
         .skip((page - 1) * limit)
-        .limit(limit);
+        .limit(limit)
+        .lean();
       res.status(200).json(reviews);
     } else {
       throw new Error(
@@ -46,7 +47,8 @@ export const getReviewsByProductId = async (req, res) => {
         })
         .sort({ createdAt: -1 })
         .skip((page - 1) * limit)
-        .limit(limit);
+        .limit(limit)
+        .lean();
       res.status(200).json(reviews);
     } else {
       throw new Error(

@@ -24,7 +24,8 @@ export const getOrdersByUserId = async (req, res) => {
             model: "Product",
             select: ["name", "thumbnail", "price"],
           },
-        });
+        })
+        .lean();
       res.status(200).json(orders);
     } else {
       throw new Error(

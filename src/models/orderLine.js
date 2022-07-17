@@ -30,8 +30,6 @@ const orderLineSchema = new Schema(
   }
 );
 
-orderLineSchema.set("toJSON", { virtuals: true });
-
 const OrderLine = mongoose.model("OrderLine", orderLineSchema);
 
 export default OrderLine;

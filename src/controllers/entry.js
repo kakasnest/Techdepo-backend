@@ -13,9 +13,9 @@ export const login = async (req, res) => {
   } = process;
 
   try {
-    const user = await User.findOne({ email }).select("+password");
+    const user = await User.findOne({ email }).select("+password").lean();
     if (!user) {
-      throw new Error("There isn't a user with such a email");
+      throw new Error("There isn't a user with such an email");
     } else {
       const match = await compare(password, user.password);
       if (!match) {
@@ -40,7 +40,7 @@ export const register = async (req, res) => {
   } = req;
 
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).lean();
     if (user) {
       throw new Error("Email already in use");
     } else {
@@ -70,7 +70,7 @@ export const adminRegister = async (req, res) => {
   } = req;
 
   try {
-    const admin = await Admin.findOne({ username });
+    const admin = await Admin.findOne({ username }).login();
     if (admin) {
       throw new Error("Username already exists");
     } else {
@@ -92,7 +92,7 @@ export const adminLogin = async (req, res) => {
   } = process;
 
   try {
-    const admin = await Admin.findOne({ username }).select("+password");
+    const admin = await Admin.findOne({ username }).select("+password").lean();
     if (!admin) {
       throw new Error("There isn't an administrator with such a username");
     } else {

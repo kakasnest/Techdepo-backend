@@ -4,7 +4,7 @@ import { createAPIPath } from "../utils/controller_related/general.js";
 
 export const getCategories = async (req, res) => {
   try {
-    const categories = await Category.find().select(["image", "name"]);
+    const categories = await Category.find().select(["image", "name"]).lean();
     res.status(200).json(categories);
   } catch (err) {
     res.status(500).json({ message: err.message });

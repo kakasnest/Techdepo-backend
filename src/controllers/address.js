@@ -13,7 +13,8 @@ export const getAddressesByUserId = async (req, res) => {
         .select(["-__v", "-userId"])
         .sort({ name: 1 })
         .skip((page - 1) * limit)
-        .limit(limit);
+        .limit(limit)
+        .lean();
       res.status(200).json(addresses);
     } else {
       throw new Error(
