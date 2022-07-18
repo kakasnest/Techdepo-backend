@@ -35,10 +35,7 @@ const reviewSchema = new Schema(
 
         message: "A valid productId is required",
       },
-      required: [
-        true,
-        "At least one ProductId is required to create a valid review",
-      ],
+      required: [true, "A valid productId is required"],
       index: true,
     },
   },

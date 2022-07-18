@@ -5,6 +5,7 @@ import {
   checkPaginationParams,
   createAPIPath,
 } from "../utils/controller_related/general.js";
+import { generalPlaceholderPath } from "../utils/database_related/defaultImagePaths.js";
 
 export const getProductById = async (req, res) => {
   const {
@@ -134,8 +135,8 @@ export const resetProductImagesById = async (req, res) => {
 
   try {
     await Product.findByIdAndUpdate(id, {
-      images: ["/api/images/default/placeholder.png"],
-      thumbnail: "/api/images/default/placeholder.png",
+      images: [generalPlaceholderPath],
+      thumbnail: generalPlaceholderPath,
     });
     res.status(200).json({
       message: "Product images have been reset using default image",
