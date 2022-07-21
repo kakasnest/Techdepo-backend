@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import Category from "../../models/category.js";
 import Product from "../../models/product.js";
 
 const { ObjectId } = mongoose.Types;
@@ -49,4 +50,12 @@ export const isStockValid = (stock) => {
 
 export const isPriceValid = (price) => {
   return price >= 0 && typeof price === "number" && Number.isFinite(price);
+};
+
+export const areCategoriesValid = async (categories) => {
+  for (let i = 0; i < categories.length; i++) {
+    const category = await Category.exists({ _id: categories[i] });
+    if (category === null) return false;
+  }
+  return true;
 };

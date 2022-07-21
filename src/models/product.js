@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import {
+  areCategoriesValid,
   isPriceValid,
   isStockValid,
 } from "../utils/controller_related/product.js";
@@ -48,6 +49,10 @@ const productSchema = new Schema(
       type: [Schema.Types.ObjectId],
       ref: "Category",
       default: [],
+      validate: {
+        validator: areCategoriesValid,
+        message: "Valid categories required",
+      },
     },
     isActive: {
       type: Boolean,
