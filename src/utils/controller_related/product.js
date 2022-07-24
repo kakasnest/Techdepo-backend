@@ -11,13 +11,13 @@ export const productRating = (id) => {
         rating: [
           { $match: { productId: ObjectId(id) } },
           {
-            $group: { _id: "$productId", ratingAvg: { $avg: "$rating" } },
+            $group: { _id: "$productId", rating: { $avg: "$rating" } },
           },
         ],
-        ratingCount: [
+        numberOfRatings: [
           { $match: { productId: ObjectId(id) } },
           {
-            $count: "ratingCount",
+            $count: "numberOfRatings",
           },
         ],
       },
@@ -26,12 +26,12 @@ export const productRating = (id) => {
       $unwind: "$rating",
     },
     {
-      $unwind: "$ratingCount",
+      $unwind: "$numberOfRatings",
     },
     {
       $project: {
-        rating: "$rating.ratingAvg",
-        ratingCount: "$ratingCount.ratingCount",
+        rating: "$rating.rating",
+        numberOfRatings: "$numberOfRatings.numberOfRatings",
       },
     },
   ];
