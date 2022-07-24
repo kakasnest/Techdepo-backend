@@ -6,32 +6,12 @@ const { ObjectId } = mongoose.Types;
 
 export const productRating = (id) => {
   return [
+    { $match: { productId: ObjectId(id) } },
     {
-      $facet: {
-        rating: [
-          { $match: { productId: ObjectId(id) } },
-          {
-            $group: { _id: "$productId", rating: { $avg: "$rating" } },
-          },
-        ],
-        numberOfRatings: [
-          { $match: { productId: ObjectId(id) } },
-          {
-            $count: "numberOfRatings",
-          },
-        ],
-      },
-    },
-    {
-      $unwind: "$rating",
-    },
-    {
-      $unwind: "$numberOfRatings",
-    },
-    {
-      $project: {
-        rating: "$rating.rating",
-        numberOfRatings: "$numberOfRatings.numberOfRatings",
+      $group: {
+        _id: "$productId",
+        rating: { $avg: "$rating" },
+        numberOfRatings: { $sum: 1 },
       },
     },
   ];
