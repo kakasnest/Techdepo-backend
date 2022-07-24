@@ -16,9 +16,8 @@ export const getProductById = async (req, res) => {
     const product = await Product.findOne({ _id: id, isActive: true })
       .select(["-createdAt", "-updatedAt", "-__v", "-thumbnail", "-categories"])
       .lean();
-    const ratingData = await Review.aggregate(productRating(id));
-    const rating = ratingData;
-    res.status(200).json({ ...product, ...rating[0] });
+    const ratingInfo = await Review.aggregate(productRating(id));
+    res.status(200).json({ ...product, ...ratingInfo[0] });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -49,10 +48,10 @@ export const getProductsByCategoryId = async (req, res) => {
         .lean();
       for (let i = 0; i < products.length; i++) {
         const product = products[i];
-        const rating = await Review.aggregate(productRating(product._id));
+        const ratingInfo = await Review.aggregate(productRating(product._id));
         products[i] = {
           ...product,
-          ...rating[0],
+          ...ratingInfo[0],
         };
       }
       res.status(200).json(products);

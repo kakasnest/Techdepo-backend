@@ -14,6 +14,13 @@ export const productRating = (id) => {
         numberOfRatings: { $sum: 1 },
       },
     },
+    {
+      $project: {
+        rating: 1,
+        numberOfRatings: 1,
+        _id: 0,
+      },
+    },
   ];
 };
 
