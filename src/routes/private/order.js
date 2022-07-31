@@ -1,7 +1,7 @@
 import { Router } from "express";
 
-import { createOrder, getOrdersByUserId } from "../controllers/order.js";
-import auth from "../middlewares/auth.js";
+import { createOrder, getOrdersByUserId } from "../../controllers/order.js";
+import auth from "../../middlewares/auth.js";
 
 const router = Router();
 router.use(auth);

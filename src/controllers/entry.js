@@ -4,6 +4,44 @@ import Admin from "../models/admin.js";
 
 import User from "../models/user.js";
 
+export const register = async (req, res) => {
+  const {
+    body: { email, password },
+  } = req;
+
+  try {
+    const user = await User.findOne({ email }).lean();
+    if (user) {
+      throw new Error("Email already in use");
+    } else {
+      const hashed = await hash(password, 10);
+      await User.create({ email, password: hashed });
+      res.status(200).json({ message: "Registration complete" });
+    }
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+export const adminRegister = async (req, res) => {
+  const {
+    body: { username, password },
+  } = req;
+
+  try {
+    const admin = await Admin.findOne({ username }).lean();
+    if (admin) {
+      throw new Error("Username already exists");
+    } else {
+      const hashed = await hash(password, 10);
+      await Admin.create({ username, password: hashed });
+      res.status(200).json({ message: "Registration complete" });
+    }
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 export const login = async (req, res) => {
   const {
     body: { email, password },
@@ -28,55 +66,6 @@ export const login = async (req, res) => {
         res.cookie("auth", token, { httpOnly: true, secure: isSecure });
         res.status(200).json({ message: "Login successful" });
       }
-    }
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
-
-export const register = async (req, res) => {
-  const {
-    body: { email, password },
-  } = req;
-
-  try {
-    const user = await User.findOne({ email }).lean();
-    if (user) {
-      throw new Error("Email already in use");
-    } else {
-      const hashed = await hash(password, 10);
-      await User.create({ email, password: hashed });
-      res.status(200).json({ message: "Registration complete" });
-    }
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
-
-export const logout = async (req, res) => {
-  try {
-    res.clearCookie("auth");
-    res.status(200).json({
-      message: "Cookie has been cleared from the browser",
-    });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
-
-export const adminRegister = async (req, res) => {
-  const {
-    body: { username, password },
-  } = req;
-
-  try {
-    const admin = await Admin.findOne({ username }).login();
-    if (admin) {
-      throw new Error("Username already exists");
-    } else {
-      const hashed = await hash(password, 10);
-      await Admin.create({ username, password: hashed });
-      res.status(200).json({ message: "Registration complete" });
     }
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -113,9 +102,9 @@ export const adminLogin = async (req, res) => {
   }
 };
 
-export const adminLogout = async (req, res) => {
+export const logout = async (req, res, tokenName) => {
   try {
-    res.clearCookie("adminAuth");
+    res.clearCookie(tokenName);
     res.status(200).json({
       message: "Cookie has been cleared from the browser",
     });

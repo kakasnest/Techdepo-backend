@@ -5,8 +5,8 @@ import {
   deleteAddressById,
   getAddressesByUserId,
   updateAddressById,
-} from "../controllers/address.js";
-import auth from "../middlewares/auth.js";
+} from "../../controllers/address.js";
+import auth from "../../middlewares/auth.js";
 
 const router = Router();
 router.use(auth);

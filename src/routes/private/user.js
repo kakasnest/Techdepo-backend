@@ -1,7 +1,7 @@
 import { Router } from "express";
 
-import { getUserById, getUsers } from "../controllers/user.js";
-import adminAuth from "../middlewares/adminAuth.js";
+import { getUserById, getUsers } from "../../controllers/user.js";
+import adminAuth from "../../middlewares/adminAuth.js";
 
 const router = Router();
 router.use(adminAuth);

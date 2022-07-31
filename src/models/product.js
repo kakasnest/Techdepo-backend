@@ -16,9 +16,26 @@ const productSchema = new Schema(
       unique: true,
     },
     description: {
-      type: String,
-      trim: true,
-      default: "",
+      brand: {
+        type: String,
+        trim: true,
+        default: "",
+      },
+      textHU: {
+        type: String,
+        trim: true,
+        default: "",
+      },
+      textENG: {
+        type: String,
+        trim: true,
+        default: "",
+      },
+      textDE: {
+        type: String,
+        trim: true,
+        default: "",
+      },
     },
     images: {
       type: [String],
